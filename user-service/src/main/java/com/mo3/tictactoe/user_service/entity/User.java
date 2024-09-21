@@ -28,6 +28,13 @@ public class User implements UserDetails {
     @ElementCollection
     private List<UUID> gameIDs;
 
+
+    public User() {
+        this.gamesWon = 0;
+        this.gamesLost = 0;
+        this.gamesDrawn = 0;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
