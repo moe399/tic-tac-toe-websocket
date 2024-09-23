@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 public class SessionCheckFilter extends AbstractGatewayFilterFactory<SessionCheckFilter.Config> {
 
     @Autowired
-    private  RedisTemplate<String, String> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
 
     public static class Config {
 
@@ -43,7 +43,6 @@ public class SessionCheckFilter extends AbstractGatewayFilterFactory<SessionChec
         return (exchange, chain) -> {
 
             logger.info("SessionFilter entered");
-//            logger.info("Session " + exchange.getRequest().getCookies().get("JSESSIONID"));
 
 
             String requestPath = exchange.getRequest().getURI().getPath();
@@ -51,41 +50,40 @@ public class SessionCheckFilter extends AbstractGatewayFilterFactory<SessionChec
 
             if (requestPath.startsWith("/auth/")) {
                 logger.info("Skipping session validation for path: " + requestPath);
-                return chain.filter(exchange); // Proceed without session validation
+                return chain.filter(exchange);
             }
 
-            // For all other paths, perform session validation
+
             if (exchange.getRequest().getCookies().get("JSESSIONID") != null) {
-                // Extract the session ID from the cookie
+
                 String jsessionid = exchange.getRequest().getCookies()
                         .getFirst("JSESSIONID")
                         .getValue();
 
                 logger.info("JSESSIONID PASSED: " + jsessionid);
 
-                // Retrieve session data from Redis
+
                 List<Object> sessionData = redisTemplate.opsForHash()
                         .values("spring:session:sessions:" + jsessionid);
 
                 if (!sessionData.isEmpty()) {
                     logger.info("Returned session from Redis: " + sessionData);
-                    // Session is valid, proceed with the request
+
                     return chain.filter(exchange);
                 } else {
                     logger.warning("Invalid or expired session ID: " + jsessionid);
-                    // Return unauthorized response
+
                     exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                     return exchange.getResponse().setComplete();
                 }
             } else {
                 logger.warning("JSESSIONID cookie is missing for path: " + requestPath);
-                // Return unauthorized response
+
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();
             }
         };
     }
-
 
 
 }
