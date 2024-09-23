@@ -73,10 +73,8 @@ public class AuthService {
             User user = userRepository.findByUsername(userAuthRequest.getUsername());
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userAuthRequest.getUsername(), userAuthRequest.getPassword());
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
-            SecurityContext securityContext = new SecurityContextImpl();
-            securityContext.setAuthentication(authentication);
-            SecurityContextHolder.setContext(securityContext);
-            securityContextRepository.saveContext(securityContext, request, response);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            securityContextRepository.saveContext(SecurityContextHolder.getContext(), request, response);
             logger.info("Successfully logged in user");
             return new LoginResponseDTO("Successfully logged in", user.getUsername());
 

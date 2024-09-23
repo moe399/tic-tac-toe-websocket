@@ -35,7 +35,7 @@ public class SecurityConfig {
         http.formLogin(form -> form.disable());
 
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
-        http.httpBasic(basic -> basic.securityContextRepository(securityContextRepository));
+//        http.httpBasic(basic -> basic.securityContextRepository(securityContextRepository));
         http.formLogin(login -> login.disable());
         return http.build();
 
