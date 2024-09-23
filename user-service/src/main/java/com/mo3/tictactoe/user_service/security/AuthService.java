@@ -5,6 +5,7 @@ import com.mo3.tictactoe.user_service.dto.RegisterationResponseDTO;
 import com.mo3.tictactoe.user_service.dto.UserAuthRequestDTO;
 import com.mo3.tictactoe.user_service.entity.User;
 import com.mo3.tictactoe.user_service.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -76,6 +77,12 @@ public class AuthService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             securityContextRepository.saveContext(SecurityContextHolder.getContext(), request, response);
             logger.info("Successfully logged in user");
+            logger.info("SESSION ID USER SERVICE: " + request.getSession().getId());
+            Cookie cookie = new Cookie("JSESSIONID", request.getSession().getId());
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            response.addCookie(cookie);
             return new LoginResponseDTO("Successfully logged in", user.getUsername());
 
         } catch (Exception e) {
