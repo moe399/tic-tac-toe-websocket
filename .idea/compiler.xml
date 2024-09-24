@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
+        <module name="matchmaking-service" />
         <module name="config-server" />
         <module name="user-service" />
         <module name="service-registery" />
@@ -18,6 +19,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="config-server" options="-parameters" />
+      <module name="matchmaking-service" options="-parameters" />
       <module name="service-registery" options="-parameters" />
       <module name="user-service" options="-parameters" />
     </option>
