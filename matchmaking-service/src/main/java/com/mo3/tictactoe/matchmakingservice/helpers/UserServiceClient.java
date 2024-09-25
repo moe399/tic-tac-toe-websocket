@@ -1,6 +1,7 @@
 package com.mo3.tictactoe.matchmakingservice.helpers;
 
 
+import com.mo3.tictactoe.matchmakingservice.dto.UserIdResponseDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface UserServiceClient {
 
     @GetMapping("/user/getid")
-    String getID();
+    UserIdResponseDTO getID();
 
 
 }

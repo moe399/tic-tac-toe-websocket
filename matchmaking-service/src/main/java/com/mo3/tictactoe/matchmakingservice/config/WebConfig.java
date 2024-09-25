@@ -16,10 +16,5 @@ public class WebConfig implements WebMvcConfigurer {
     private final FeignClientInterceptor feignClientInterceptor;
 
 
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor()
-//                .addPathPatterns("/**");
-//    }
 
 }
