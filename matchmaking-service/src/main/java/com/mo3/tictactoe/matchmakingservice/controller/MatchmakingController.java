@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,10 +45,28 @@ public class MatchmakingController {
     }
 
 
+
+
+
     @GetMapping("/getgame")
     public ResponseEntity<List<GameSession>> getGames(){
 
         return ResponseEntity.ok(matchmakingService.listAllGames());
+    }
+
+    @PostMapping("/joingame/{gamesessionid}")
+    public ResponseEntity<String> joinGame(@PathVariable String gamesessionid){
+
+        try{
+            matchmakingService.joinGame(gamesessionid);
+            return ResponseEntity.ok("Successfully joined game: " + gamesessionid);
+        }
+
+        catch (Exception e){
+            return ResponseEntity.badRequest().body("Unable to join game: " + gamesessionid);
+        }
+
+
     }
 
 

@@ -37,28 +37,27 @@ public class MatchmakingService {
     // List Games
 
 
-    public String createGame(){
+    public String createGame() {
         System.out.println("reached create game service");
         String gameSessionID = UUID.randomUUID().toString();
-
 
 
         try {
             UserDataResponseDTO responseDTO = userServiceClient.getUserDetails();
 
-            if(responseDTO.isGameState() == true){
+            if (responseDTO.isGameState() == true) {
 
                 throw new UserAlreadyInGameException("User is already in game");
             }
 
             Long player1Id = responseDTO.getId();
             GameSession sessionData = new GameSession(player1Id);
+            sessionData.setGameSessionId(gameSessionID);
 
             // Store the session in Redis
             redisTemplate.opsForValue().set(gameSessionID, sessionData);
             System.out.println("Game session stored with ID: " + gameSessionID);
             userServiceClient.updateUserGameStatus("true");
-
 
 
         } catch (Exception e) {
@@ -69,6 +68,33 @@ public class MatchmakingService {
 
         return gameSessionID;
 
+    }
+
+
+    public String joinGame(String gameSessionID) {
+
+
+
+        try {
+
+            UserDataResponseDTO responseDTO = userServiceClient.getUserDetails();
+            GameSession gameSession = (GameSession) redisTemplate.opsForValue().get(gameSessionID);
+
+            if(responseDTO.getId() == gameSession.getPlayer1id()){
+                throw new UserAlreadyInGameException("User is already in game");
+            }
+
+            gameSession.setPlayer2id(responseDTO.getId());
+            redisTemplate.opsForValue().set(gameSessionID, gameSession);
+            userServiceClient.updateUserGameStatus("true");
+
+            // Start game service, redirect or something
+            return gameSessionID;
+        }
+
+        catch (Exception e) {
+            return "";
+        }
     }
 
 
@@ -85,7 +111,6 @@ public class MatchmakingService {
 
         return gameSessions;
     }
-
 
 
 }
