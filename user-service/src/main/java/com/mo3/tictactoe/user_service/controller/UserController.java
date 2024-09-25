@@ -1,11 +1,11 @@
 package com.mo3.tictactoe.user_service.controller;
 
+import com.mo3.tictactoe.user_service.dto.UserDataResponseDTO;
 import com.mo3.tictactoe.user_service.dto.UserIdResponseDTO;
 import com.mo3.tictactoe.user_service.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
 
@@ -17,20 +17,46 @@ public class UserController {
     final Logger logger = Logger.getLogger(UserController.class.getName());
 
 
-    @GetMapping("/user/getid")
-    public ResponseEntity<UserIdResponseDTO> getUserDetails(){
+    @GetMapping("/user/getuserdetails")
+    public ResponseEntity<UserDataResponseDTO> getUserDetails(){
 
 
        try{
-           return userService.getUserId();
+           return ResponseEntity.ok(userService.getUserData());
        }
 
        catch (Exception e){
            logger.warning("Error returning UserID in controller: ");
            logger.warning(e.getMessage());
-           UserIdResponseDTO userIdResponseDTO = new UserIdResponseDTO();
-           return ResponseEntity.badRequest().body(userIdResponseDTO);
+           UserDataResponseDTO userDataResponseDTO = new UserDataResponseDTO();
+           return ResponseEntity.badRequest().body(userDataResponseDTO);
        }
+
+
+
+    }
+
+
+
+    @PostMapping("/user/update/{state}" )
+    public ResponseEntity<UserDataResponseDTO> updateUser(@PathVariable String state){
+
+        Boolean stateToSendToService = false;
+
+        if(state.matches("true")){
+            stateToSendToService = true;
+        }
+
+        else if(state.matches("false")){
+            stateToSendToService = false;
+        }
+
+        else{
+            return ResponseEntity.badRequest().body(new UserDataResponseDTO());
+        }
+
+
+        return ResponseEntity.ok(userService.updateUserGameStatus(stateToSendToService));
 
     }
 

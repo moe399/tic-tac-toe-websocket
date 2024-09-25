@@ -1,7 +1,9 @@
 package com.mo3.tictactoe.matchmakingservice.service;
 
 
+import com.mo3.tictactoe.matchmakingservice.dto.UserDataResponseDTO;
 import com.mo3.tictactoe.matchmakingservice.dto.UserIdResponseDTO;
+import com.mo3.tictactoe.matchmakingservice.exceptions.UserAlreadyInGameException;
 import com.mo3.tictactoe.matchmakingservice.helpers.GameSession;
 import com.mo3.tictactoe.matchmakingservice.helpers.UserServiceClient;
 //import org.springframework.data.redis.core.HashOperations;
@@ -40,18 +42,29 @@ public class MatchmakingService {
         String gameSessionID = UUID.randomUUID().toString();
 
 
+
         try {
-            UserIdResponseDTO responseDTO = userServiceClient.getID();
+            UserDataResponseDTO responseDTO = userServiceClient.getUserDetails();
+
+            if(responseDTO.isGameState() == true){
+
+                throw new UserAlreadyInGameException("User is already in game");
+            }
+
             Long player1Id = responseDTO.getId();
             GameSession sessionData = new GameSession(player1Id);
 
             // Store the session in Redis
             redisTemplate.opsForValue().set(gameSessionID, sessionData);
             System.out.println("Game session stored with ID: " + gameSessionID);
+            userServiceClient.updateUserGameStatus("true");
+
+
 
         } catch (Exception e) {
             System.err.println("Error storing session in Redis: " + e.getMessage());
             e.printStackTrace();
+            return "";
         }
 
         return gameSessionID;

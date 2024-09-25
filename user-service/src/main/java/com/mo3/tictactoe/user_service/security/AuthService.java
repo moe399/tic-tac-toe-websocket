@@ -49,6 +49,7 @@ public class AuthService {
             User user = new User();
             user.setUsername(userAuthRequest.getUsername());
             user.setPassword(bCryptPasswordEncoder.encode(userAuthRequest.getPassword()));
+            user.setIsUserInGame(false);
             userRepository.save(user);
             logger.info("Successfully registered user");
             return new RegisterationResponseDTO("User Registered Succesfully!", user.getUsername());

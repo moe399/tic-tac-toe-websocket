@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,10 +28,19 @@ public class MatchmakingController {
     }
 
 
-    @GetMapping("/creategame")
+    @PostMapping("/creategame")
     public ResponseEntity<String> createGame(){
-        System.out.println("Reached get id controller");
-        return ResponseEntity.ok("Succesfully created game: " + matchmakingService.createGame());
+        try {
+            String gameId = matchmakingService.createGame();  // Call createGame() only once
+            if (gameId.isEmpty()) {
+
+                return ResponseEntity.badRequest().body("User in game");
+            }
+            System.out.println("Reached get id controller");
+            return ResponseEntity.ok("Successfully created game: " + gameId);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 
@@ -39,6 +49,9 @@ public class MatchmakingController {
 
         return ResponseEntity.ok(matchmakingService.listAllGames());
     }
+
+
+
 
 
 }
