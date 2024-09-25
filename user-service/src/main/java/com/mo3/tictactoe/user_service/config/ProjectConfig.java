@@ -8,6 +8,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 
+import java.util.logging.Logger;
+
 @Configuration
 public class ProjectConfig {
 
@@ -18,6 +20,8 @@ public class ProjectConfig {
         return new HttpSessionSecurityContextRepository();
 
     }
+
+
 
 
     @Bean

@@ -4,9 +4,10 @@ server:
 eureka:
   client:
     register-with-eureka: false
-    fetch-registry: false
+    fetch-registry: true
   instance:
     hostname: localhost
+    prefer-ip-address: true
 
 spring:
   application:
