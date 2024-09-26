@@ -3,6 +3,7 @@ package com.mo3.tictactoe.matchmakingservice.service;
 
 import com.mo3.tictactoe.matchmakingservice.dto.UserDataResponseDTO;
 import com.mo3.tictactoe.matchmakingservice.dto.UserIdResponseDTO;
+import com.mo3.tictactoe.matchmakingservice.exceptions.GameIsFullException;
 import com.mo3.tictactoe.matchmakingservice.exceptions.UserAlreadyInGameException;
 import com.mo3.tictactoe.matchmakingservice.helpers.GameSession;
 import com.mo3.tictactoe.matchmakingservice.helpers.UserServiceClient;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -75,14 +78,22 @@ public class MatchmakingService {
 
 
 
-        try {
 
             UserDataResponseDTO responseDTO = userServiceClient.getUserDetails();
             GameSession gameSession = (GameSession) redisTemplate.opsForValue().get(gameSessionID);
 
             if(responseDTO.getId() == gameSession.getPlayer1id()){
+                System.out.println("user in game");
                 throw new UserAlreadyInGameException("User is already in game");
             }
+
+            if(gameSession.getPlayer2id() != null){
+                // this means 2 players in game already
+                System.out.println("game is full");
+                throw new GameIsFullException("Game is full");
+
+            }
+
 
             gameSession.setPlayer2id(responseDTO.getId());
             redisTemplate.opsForValue().set(gameSessionID, gameSession);
@@ -92,10 +103,8 @@ public class MatchmakingService {
             return gameSessionID;
         }
 
-        catch (Exception e) {
-            return "";
-        }
-    }
+
+
 
 
     public List<GameSession> listAllGames() {
