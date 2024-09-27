@@ -84,6 +84,7 @@ public class MatchmakingService {
             UserDataResponseDTO responseDTO = userServiceClient.getUserDetails();
             GameSession gameSession = (GameSession) redisTemplate.opsForValue().get(gameSessionID);
 
+
             if(responseDTO.getId() == gameSession.getPlayer1id()){
                 System.out.println("user in game");
                 throw new UserAlreadyInGameException("User is already in game");
@@ -107,7 +108,7 @@ public class MatchmakingService {
         // 2 - and player 1 - who is listening on Redis
 
 
-            redisTemplate.convertAndSend(gameSessionID, "Game Ready!");
+            redisTemplate.convertAndSend(gameSessionID, "Game Ready! " + "against: " + responseDTO.getUsername());
 
             // Start game service, redirect or something
             return gameSessionID;

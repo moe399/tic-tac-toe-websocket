@@ -11,6 +11,7 @@
         <module name="matchmaking-service" />
         <module name="config-server" />
         <module name="user-service" />
+        <module name="game-service" />
         <module name="service-registery" />
       </profile>
     </annotationProcessing>
@@ -19,6 +20,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="config-server" options="-parameters" />
+      <module name="game-service" options="-parameters" />
       <module name="matchmaking-service" options="-parameters" />
       <module name="service-registery" options="-parameters" />
       <module name="user-service" options="-parameters" />
