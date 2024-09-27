@@ -1,4 +1,4 @@
-package com.example.game_service.controller;
+package com.example.game_service.Service;
 
 
 import com.example.game_service.exception.GameNotFoundException;
