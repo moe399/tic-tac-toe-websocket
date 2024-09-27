@@ -59,8 +59,10 @@ public class MatchmakingService {
 
             // Store the session in Redis
             redisTemplate.opsForValue().set(gameSessionID, sessionData);
-            System.out.println("Game session stored with ID: " + gameSessionID);
+            String message = "\"Game session stored with ID: \" + gameSessionID";
+            System.out.println(message);
             userServiceClient.updateUserGameStatus("true");
+            redisTemplate.convertAndSend(gameSessionID, message );
 
 
         } catch (Exception e) {
@@ -98,6 +100,14 @@ public class MatchmakingService {
             gameSession.setPlayer2id(responseDTO.getId());
             redisTemplate.opsForValue().set(gameSessionID, gameSession);
             userServiceClient.updateUserGameStatus("true");
+
+
+            // RIGHT HERE!!! - Game Service call to createActual Game and then return Websocket url to:
+        // 1 - player 2 - that called this endpoint as string
+        // 2 - and player 1 - who is listening on Redis
+
+
+            redisTemplate.convertAndSend(gameSessionID, "Game Ready!");
 
             // Start game service, redirect or something
             return gameSessionID;
