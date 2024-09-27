@@ -58,8 +58,8 @@ public class MatchmakingController {
     public ResponseEntity<String> joinGame(@PathVariable String gamesessionid){
 
         try{
-            matchmakingService.joinGame(gamesessionid);
-            return ResponseEntity.ok("Successfully joined game: " + gamesessionid);
+            String websocketurl = matchmakingService.joinGame(gamesessionid);
+            return ResponseEntity.ok("Successfully joined game: " + websocketurl);
         }
 
         catch (Exception e){

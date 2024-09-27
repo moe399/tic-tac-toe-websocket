@@ -2,20 +2,17 @@ package com.mo3.tictactoe.matchmakingservice.service;
 
 
 import com.mo3.tictactoe.matchmakingservice.dto.UserDataResponseDTO;
-import com.mo3.tictactoe.matchmakingservice.dto.UserIdResponseDTO;
 import com.mo3.tictactoe.matchmakingservice.exceptions.GameIsFullException;
+import com.mo3.tictactoe.matchmakingservice.exceptions.UnableToStartGameException;
 import com.mo3.tictactoe.matchmakingservice.exceptions.UserAlreadyInGameException;
+import com.mo3.tictactoe.matchmakingservice.helpers.GameServiceClient;
 import com.mo3.tictactoe.matchmakingservice.helpers.GameSession;
 import com.mo3.tictactoe.matchmakingservice.helpers.UserServiceClient;
 //import org.springframework.data.redis.core.HashOperations;
 //import org.springframework.data.redis.core.RedisTemplate;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.HashOperations;
 
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,6 +29,7 @@ public class MatchmakingService {
 //    private HashOperations<String, String, Object> hashOperations;
 
     private final UserServiceClient userServiceClient;
+    private final GameServiceClient gameServiceClient;
 
 
     // Create Game (Creates redis entry)
@@ -107,11 +105,23 @@ public class MatchmakingService {
         // 1 - player 2 - that called this endpoint as string
         // 2 - and player 1 - who is listening on Redis
 
+        String gameUrl = "";
 
-            redisTemplate.convertAndSend(gameSessionID, "Game Ready! " + "against: " + responseDTO.getUsername());
+
+        try{
+            gameUrl = gameServiceClient.startGame(gameSessionID);
+            // make sure to find out if this returns success or not
+        }
+        catch (Exception e){
+            throw  new UnableToStartGameException("Unable to start game");
+        }
+
+
+
+            redisTemplate.convertAndSend(gameSessionID, "Game Ready! " + "url: " + gameUrl);
 
             // Start game service, redirect or something
-            return gameSessionID;
+            return gameUrl;
         }
 
 
