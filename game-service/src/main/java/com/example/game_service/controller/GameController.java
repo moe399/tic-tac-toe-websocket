@@ -25,24 +25,4 @@ public class GameController {
 
     }
 
-
-    @PostMapping("/startgame/{sessionId}")
-    public ResponseEntity<String> startGame(@PathVariable("sessionId") String sessionId, HttpServletRequest request, HttpServletResponse response){
-
-        try{
-           String websocketUrl = gameService.startGame(sessionId, request, response);
-            return ResponseEntity.ok(websocketUrl);
-        }
-
-        catch (Exception e){
-            System.out.println(e.getMessage());
-            return ResponseEntity.badRequest().body("Cannot start game");
-
-        }
-
-
-
-    }
-
-
 }

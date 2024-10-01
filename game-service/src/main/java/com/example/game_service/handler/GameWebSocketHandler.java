@@ -22,15 +22,25 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session){
-        System.out.println("Connection established");
-        System.out.println("The session is: " + extractGameSessionID(session));
-//        webSocketService.registerSession(session.getId(), session);
+
+        // add logic to see if this game even exists, if not disconnect
+
+        String query = session.getUri().getQuery();
+        String gameSessionID = query.split("=")[1];
+
+
+        webSocketService.registerSession(gameSessionID, session);
+
 
     }
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message){
-        System.out.println("Messaged Received: " + message);
+
+        String query = session.getUri().getQuery();
+        String gameSessionID = query.split("=")[1];
+
+      webSocketService.processMessage(gameSessionID, message.getPayload(), session);
 
     }
 
@@ -43,13 +53,6 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
 
 
 
-
-
-    private String extractGameSessionID(WebSocketSession session) {
-        URI uri = session.getUri();
-        String path = uri.getPath();
-        return path.substring(path.lastIndexOf('/') + 1);
-    }
 
 
 
