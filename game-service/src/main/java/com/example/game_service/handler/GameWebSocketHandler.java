@@ -8,6 +8,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
 import java.net.URI;
 
 @Component
@@ -21,12 +22,21 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
 
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session){
+    public void afterConnectionEstablished(WebSocketSession session) throws IOException {
 
         // add logic to see if this game even exists, if not disconnect
+        
+
 
         String query = session.getUri().getQuery();
         String gameSessionID = query.split("=")[1];
+
+
+        if (!webSocketService.checkIfGameSessionExists(gameSessionID)){
+            System.out.println("Session doesnt exist, closing connection!");
+            session.close();
+
+        }
 
 
         webSocketService.registerSession(gameSessionID, session);
@@ -37,8 +47,16 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message){
 
+
         String query = session.getUri().getQuery();
         String gameSessionID = query.split("=")[1];
+
+        if (!webSocketService.checkIfGameSessionExists(gameSessionID)){
+            System.out.println("Session doesnt exist, closing connection!");
+            session.close();
+
+        }
+
 
       webSocketService.processMessage(gameSessionID, message.getPayload(), session);
 

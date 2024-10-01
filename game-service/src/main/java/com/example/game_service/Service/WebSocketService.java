@@ -39,7 +39,13 @@ public class WebSocketService {
     }
 
 
-    
+
+    public boolean checkIfGameSessionExists(String gamesessionId){
+
+
+        return redisTemplate.hasKey(gamesessionId).booleanValue();
+
+    }
 
 
 
