@@ -2,6 +2,8 @@ package com.mo3.tictactoe.matchmakingservice.controller;
 
 import com.mo3.tictactoe.matchmakingservice.helpers.GameSession;
 import com.mo3.tictactoe.matchmakingservice.service.MatchmakingService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.http.ResponseEntity;
@@ -55,10 +57,10 @@ public class MatchmakingController {
     }
 
     @PostMapping("/joingame/{gamesessionid}")
-    public ResponseEntity<String> joinGame(@PathVariable String gamesessionid){
+    public ResponseEntity<String> joinGame(@PathVariable String gamesessionid, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
 
         try{
-            String websocketurl = matchmakingService.joinGame(gamesessionid);
+            String websocketurl = matchmakingService.joinGame(gamesessionid,httpServletRequest, httpServletResponse);
             return ResponseEntity.ok("Successfully joined game: " + websocketurl);
         }
 

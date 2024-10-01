@@ -17,8 +17,16 @@ public class GameService {
     RedisTemplate<String, Object> redisTemplate;
 
 
+//    public String registerGame(){
+//
+//
+//
+//    }
+
 
     public String startGame(String sessionId, HttpServletRequest request, HttpServletResponse response){
+
+
 
 
 

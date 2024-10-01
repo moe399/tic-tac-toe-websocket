@@ -8,6 +8,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.net.URI;
+
 @Component
 @AllArgsConstructor
 public class GameWebSocketHandler extends TextWebSocketHandler {
@@ -21,7 +23,8 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session){
         System.out.println("Connection established");
-        webSocketService.registerSession(session.getId(), session);
+        System.out.println("The session is: " + extractGameSessionID(session));
+//        webSocketService.registerSession(session.getId(), session);
 
     }
 
@@ -41,6 +44,12 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
 
 
 
+
+    private String extractGameSessionID(WebSocketSession session) {
+        URI uri = session.getUri();
+        String path = uri.getPath();
+        return path.substring(path.lastIndexOf('/') + 1);
+    }
 
 
 

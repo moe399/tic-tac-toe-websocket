@@ -3,6 +3,7 @@ package com.mo3.tictactoe.matchmakingservice.service;
 
 import com.mo3.tictactoe.matchmakingservice.dto.UserDataResponseDTO;
 import com.mo3.tictactoe.matchmakingservice.exceptions.GameIsFullException;
+import com.mo3.tictactoe.matchmakingservice.exceptions.GameNotFoundException;
 import com.mo3.tictactoe.matchmakingservice.exceptions.UnableToStartGameException;
 import com.mo3.tictactoe.matchmakingservice.exceptions.UserAlreadyInGameException;
 import com.mo3.tictactoe.matchmakingservice.helpers.GameServiceClient;
@@ -10,6 +11,8 @@ import com.mo3.tictactoe.matchmakingservice.helpers.GameSession;
 import com.mo3.tictactoe.matchmakingservice.helpers.UserServiceClient;
 //import org.springframework.data.redis.core.HashOperations;
 //import org.springframework.data.redis.core.RedisTemplate;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -30,7 +33,7 @@ public class MatchmakingService {
 
     private final UserServiceClient userServiceClient;
     private final GameServiceClient gameServiceClient;
-
+    public static final String APIGATEWAY_HOSTNAMEANDPORT = System.getenv("APIGATEWAY_HOSTNAMEANDPORT");
 
     // Create Game (Creates redis entry)
     // Join Game (updates redis entry)
@@ -74,7 +77,7 @@ public class MatchmakingService {
     }
 
 
-    public String joinGame(String gameSessionID) {
+    public String joinGame(String gameSessionID, HttpServletRequest request, HttpServletResponse response) {
 
 
 
@@ -109,7 +112,19 @@ public class MatchmakingService {
 
 
         try{
-            gameUrl = gameServiceClient.startGame(gameSessionID);
+
+            if(redisTemplate.hasKey(gameSessionID) == null || redisTemplate.hasKey(gameSessionID) == false){
+
+                throw new GameNotFoundException("Game was not found");
+            }
+
+
+            String host = request.getServerName();
+            int port = request.getServerPort();
+            gameUrl = "ws://" + APIGATEWAY_HOSTNAMEANDPORT +"/game/ws/game/" + gameSessionID;
+
+
+
             // make sure to find out if this returns success or not
         }
         catch (Exception e){
