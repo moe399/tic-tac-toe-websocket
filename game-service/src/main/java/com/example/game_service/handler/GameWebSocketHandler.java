@@ -45,7 +45,7 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
     }
 
     @Override
-    public void handleTextMessage(WebSocketSession session, TextMessage message){
+    public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
 
 
         String query = session.getUri().getQuery();
