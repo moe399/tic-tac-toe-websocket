@@ -3,6 +3,8 @@ package com.example.game_service.Service;
 
 import com.example.game_service.entity.Game;
 import com.example.game_service.exception.GameNotFoundException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.TypeKey;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,19 +32,60 @@ public class GameService {
 //    }
 
 
-    public void createGameInMap(String gameSessionId){
+    public void createGameInMap(String gameSessionId, Long player1Id, Long player2Id) {
+
+        // this method sets up game and adds to map
 
         Game game = new Game();
 
+
+        // fetch user id or both players and set them as game id's, or username...
+
+
+
         gamesMap.put(gameSessionId, game);
+
+
+        System.out.println("Created game in map with session id: " + gameSessionId);
+
+    }
+
+    public void removeGameFromMap(String gameSessionId){
+
+        gamesMap.remove(gameSessionId);
+        System.out.println("Removed game from map with session id: " + gameSessionId);
+
+        // Also maybe have to call matchmaking for this, to remove game from redis
 
     }
 
 
-    public void handleGameMove(String gameSessionId, String gameMove){
+    public void handleGameMove(String gameSessionId, String message) throws JsonProcessingException {
 
         if(gamesMap.containsKey(gameSessionId)){
             System.out.println("Game found!");
+
+
+
+
+
+
+
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            JsonNode node = objectMapper.readTree(message);
+
+            String userId = node.get("userId").asText();
+            String content = node.get("content").asText();
+
+
+            System.out.println("UserId: " + userId);
+            System.out.println("Content: " + content);
+
+
+
+
+
         }
         else{
             System.out.println("Game not found");
@@ -53,7 +96,7 @@ public class GameService {
            }
         }
 
-        System.out.println("Printing game move: " + gameMove);
+        System.out.println("Printing game move: " + message);
 
 
     }

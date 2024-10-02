@@ -1,7 +1,9 @@
 package com.example.game_service.Service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
@@ -12,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class WebSocketService {
 
 
@@ -27,12 +29,12 @@ public class WebSocketService {
 
 
         sessions.computeIfAbsent(gameSessionID, k -> new ArrayList<>()).add(webSocketSession);
-        gameService.createGameInMap(gameSessionID);
+//        gameService.createGameInMap(gameSessionID);
 
     }
 
 
-    public void processMessage(String gameSessionID, String message, WebSocketSession webSocketSession){
+    public void processMessage(String gameSessionID, String message, WebSocketSession webSocketSession) throws JsonProcessingException {
 
         gameService.handleGameMove(gameSessionID, message);
 

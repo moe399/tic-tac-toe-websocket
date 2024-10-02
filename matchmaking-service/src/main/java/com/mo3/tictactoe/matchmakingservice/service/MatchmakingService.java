@@ -122,7 +122,7 @@ public class MatchmakingService {
             String host = request.getServerName();
             int port = request.getServerPort();
             gameUrl = "ws://" + APIGATEWAY_HOSTNAMEANDPORT +"/game/ws/game/" + gameSessionID;
-
+            gameServiceClient.startGame(gameSessionID, gameSession.getPlayer1id(), gameSession.getPlayer2id());
 
 
             // make sure to find out if this returns success or not
