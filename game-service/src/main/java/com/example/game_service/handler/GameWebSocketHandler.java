@@ -60,6 +60,8 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
 
       webSocketService.processMessage(gameSessionID, message.getPayload(), session);
 
+        webSocketService.broadcastGameArray(gameSessionID);
+
     }
 
 

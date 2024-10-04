@@ -1,7 +1,10 @@
 package com.example.game_service.entity;
 
 
+import com.example.game_service.exception.ColumnExceededException;
 import com.example.game_service.exception.PlayerNotFoundException;
+import com.example.game_service.exception.PositionTakenException;
+import com.example.game_service.exception.RowExceededException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,12 +38,10 @@ public class Game {
     }
 
 
-
-    public void changePlayer(){
-
+    public void changePlayer() {
 
 
-        if(currentPlayer.isTurn() == true){
+        if (currentPlayer.isTurn() == true) {
             currentPlayer.setTurn(false);
             otherPlayer.setTurn(true);
 
@@ -48,9 +49,7 @@ public class Game {
             currentPlayer = otherPlayer;
             otherPlayer = tempPlayer;
 
-        }
-
-        else{
+        } else {
 
             currentPlayer.setTurn(true);
             otherPlayer.setTurn(false);
@@ -62,7 +61,7 @@ public class Game {
     }
 
 
-    public String playRound(Long userID, String gameMove ){
+    public void playRound(Long userID, String gameMove) {
 
         // [ROW, COL]
 
@@ -75,46 +74,33 @@ public class Game {
         int col = coordinates[1];
 
 
-
-
-
         // Get the id, and cross check it with the playerList.getplayername
 
-        if(findPlayerById(userID) != null){
+        if (findPlayerById(userID) != null) {
 
             player = findPlayerById(userID);
 
 
         }
 
-        if(row > 3){
-            return "Row exceed";
+        if (row > 3) {
+            throw new ColumnExceededException("Selected column outside of boundary");
         }
 
-        if(col > 3){
-            return "Col Exceed";
+        if (col > 3) {
+            throw new RowExceededException("Select row outside of boundary");
         }
 
-        if(gameArray[row][col] != 3){
-            return "Space Taken";
-        }
-
-        else{
+        if (gameArray[row][col] != 3) {
+            throw new PositionTakenException("Position already taken");
+        } else {
             gameArray[row][col] = currentPlayer.getPlayerNumber();
         }
 
         checkRound();
 
 
-
         changePlayer();
-
-
-        return getGameBoardString();
-
-
-
-
 
 
     }
@@ -202,15 +188,13 @@ public class Game {
         winner = null; // No winner yet
 
 
-
     }
 
 
-    public void endGame(){
+    public void endGame() {
 
 
     }
-
 
 
     // HELPER FUNCTIONS BELOW
@@ -227,7 +211,6 @@ public class Game {
 
         return coordinates;
     }
-
 
 
     public String getGameBoardString() {
@@ -249,22 +232,18 @@ public class Game {
         }
 
 
-        sb.append(" - Success");
+
 
         return sb.toString();
     }
 
 
-    public Player findPlayerById(Long userId){
+    public Player findPlayerById(Long userId) {
 
         return playerList.stream().filter(p -> p.getPlayerName().equals(userId))
                 .findFirst().orElseThrow(() -> new PlayerNotFoundException("Player not found in game"));
 
     }
-
-
-
-
 
 
 }
