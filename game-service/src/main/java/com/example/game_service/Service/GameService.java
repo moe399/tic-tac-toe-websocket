@@ -2,6 +2,7 @@ package com.example.game_service.Service;
 
 
 import com.example.game_service.entity.Game;
+import com.example.game_service.entity.Player;
 import com.example.game_service.exception.GameNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,7 +14,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -23,21 +26,24 @@ public class GameService {
 
     RedisTemplate<String, Object> redisTemplate;
 
-    private HashMap<String, Object> gamesMap = new HashMap<>();
+    private HashMap<String, Game> gamesMap = new HashMap<>();
 
-//    public String registerGame(){
-//
-//
-//
-//    }
 
 
     public void createGameInMap(String gameSessionId, Long player1Id, Long player2Id) {
 
         // this method sets up game and adds to map
 
-        Game game = new Game();
+        Player player1 = new Player(player1Id, 'O', 0);
+        Player player2 = new Player(player2Id, 'X', 1);
 
+        List<Player> playerList = new ArrayList<>();
+        playerList.add(player1);
+        playerList.add(player2);
+        Game game = new Game(playerList);
+
+
+        System.out.println("Added Player to playerlist: " + playerList.get(0).getPlayerName() + " and " + playerList.get(1).getPlayerName());
 
         // fetch user id or both players and set them as game id's, or username...
 
@@ -46,7 +52,7 @@ public class GameService {
         gamesMap.put(gameSessionId, game);
 
 
-        System.out.println("Created game in map with session id: " + gameSessionId);
+        System.out.println("Created game in map with both players - session id: " + gameSessionId);
 
     }
 
@@ -60,13 +66,10 @@ public class GameService {
     }
 
 
-    public void handleGameMove(String gameSessionId, String message) throws JsonProcessingException {
+    public String handleGameMove(String gameSessionId, String message) throws JsonProcessingException {
 
         if(gamesMap.containsKey(gameSessionId)){
             System.out.println("Game found!");
-
-
-
 
 
 
@@ -83,6 +86,7 @@ public class GameService {
             System.out.println("Content: " + content);
 
 
+          return gamesMap.get(gameSessionId).playRound(Long.valueOf(userId), content);
 
 
 
@@ -99,6 +103,7 @@ public class GameService {
         System.out.println("Printing game move: " + message);
 
 
+        return "Error making your move, will add error in future";
     }
 
 

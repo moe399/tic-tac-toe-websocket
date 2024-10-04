@@ -6,8 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,10 +36,17 @@ public class WebSocketService {
     }
 
 
-    public void processMessage(String gameSessionID, String message, WebSocketSession webSocketSession) throws JsonProcessingException {
+    public void processMessage(String gameSessionID, String message, WebSocketSession webSocketSession){
 
-        gameService.handleGameMove(gameSessionID, message);
 
+      try {
+          String response = gameService.handleGameMove(gameSessionID, message);
+
+          webSocketSession.sendMessage(new TextMessage(response));
+      }
+      catch (IOException e){
+          e.printStackTrace();
+      }
     }
 
 
