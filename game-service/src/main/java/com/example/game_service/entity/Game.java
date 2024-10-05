@@ -5,6 +5,7 @@ import com.example.game_service.exception.ColumnExceededException;
 import com.example.game_service.exception.PlayerNotFoundException;
 import com.example.game_service.exception.PositionTakenException;
 import com.example.game_service.exception.RowExceededException;
+import com.example.game_service.helpers.GameInterface;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,10 +22,12 @@ public class Game {
     private Player otherPlayer;
     private List<Player> playerList;
     private boolean hasGameEnded = false;
+    private GameInterface gameInterface;
+    private String gamesessionId;
 
     private Player winner;
 
-    public Game(List<Player> playerList) {
+    public Game(List<Player> playerList, GameInterface gameInterface) {
         this.currentPlayer = playerList.get(0);
         this.otherPlayer = playerList.get(1);
         this.playerList = playerList;
@@ -35,6 +38,12 @@ public class Game {
                         {3, 3, 3},
                         {3, 3, 3}
                 };
+
+
+        this.gameInterface = gameInterface;
+
+
+
     }
 
 
@@ -192,7 +201,9 @@ public class Game {
 
 
     public void endGame() {
-
+        System.out.println("End game function in game instance called");
+        gameInterface.endGameWithWinner(currentPlayer, gamesessionId);
+        setHasGameEnded(true);
 
     }
 

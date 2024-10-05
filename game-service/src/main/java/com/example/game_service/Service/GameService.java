@@ -4,14 +4,15 @@ import com.example.game_service.entity.Game;
 import com.example.game_service.entity.Player;
 import com.example.game_service.exception.GameNotFoundException;
 import com.example.game_service.exception.NotYourTurnException;
+import com.example.game_service.helpers.GameInterface;
+import com.example.game_service.helpers.GameObserver;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.TypeKey;
 import com.google.gson.Gson;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -21,20 +22,30 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@AllArgsConstructor
-public class GameService {
+public class GameService implements GameInterface {
     // This game service is for the local game entit
     RedisTemplate<String, Object> redisTemplate;
     private HashMap<String, Game> gamesMap = new HashMap<>();
 
-    public void createGameInMap(String gameSessionId, Long player1Id, Long player2Id) {
+
+    private List<GameObserver> gameObservers = new ArrayList<>();
+
+
+    @Autowired
+    public GameService(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+
+    }
+
+    public void createGameInMap(String gameSessionId, Long player1Id, Long player2Id ) {
         // this method sets up game and adds to map
         Player player1 = new Player(player1Id, 'O', 0);
         Player player2 = new Player(player2Id, 'X', 1);
         List<Player> playerList = new ArrayList<>();
         playerList.add(player1);
         playerList.add(player2);
-        Game game = new Game(playerList);
+        Game game = new Game(playerList, this);
+        game.setGamesessionId(gameSessionId);
         System.out.println("Added Player to playerlist: " + playerList.get(0).getPlayerName() + " and " + playerList.get(1).getPlayerName());
         // fetch user id or both players and set them as game id's, or username...
         gamesMap.put(gameSessionId, game);
@@ -55,9 +66,8 @@ public class GameService {
             JsonNode node = objectMapper.readTree(message);
             String userId = node.get("userId").asText();
             System.out.println(userId + "vs" + gamesMap.get(gameSessionId).getCurrentPlayer().getPlayerName());
-
             // another if statement here to check if user is in game at all
-            if(!userId.matches(gamesMap.get(gameSessionId).getCurrentPlayer().getPlayerName().toString())){
+            if (!userId.matches(gamesMap.get(gameSessionId).getCurrentPlayer().getPlayerName().toString())) {
                 // TEST THIS!!
                 throw new NotYourTurnException("Not your turn");
 
@@ -91,32 +101,66 @@ public class GameService {
         return "Error returning game map ";
     }
 
-
     public String returnCurrentGameState(String gameSessionId) {
-
         Gson gson = new Gson();
-
         if (gamesMap.containsKey(gameSessionId)) {
-
             String gameArray = returnGameArray(gameSessionId);
             String currentPlayer = gamesMap.get(gameSessionId).getCurrentPlayer().getPlayerName().toString();
             Map<String, String> gameState = new HashMap<>();
             gameState.put("currentPlayer", currentPlayer);
             gameState.put("gameArray", gameArray);
-
             String json = gson.toJson(gameState);
-
             return json;
 
 
         } else {
-           return "{}";
+            return "{}";
         }
     }
 
+    // Callback function - called from within gameinstance end method
+    @Override
+    public String endGameWithWinner(Player player, String gamesessionId) {
 
+        System.out.println("End game in gameservice with winner called");
+
+        notifyObserversThatGameEndedWithWinner(player, gamesessionId);
+
+        // maybe call user service to update the player games played and wins and also the other player as loser (feign client)
+
+        // gracefully end game:
+            // 1. remove game from map
+            // 2. in mathcmaking service remove the game session from redis store
+            // 3. update userservice and (a). increment user game, and wins/losses, (b), change userIngame state to false;
+
+        return "End Game with winner called!!!";
+    }
+
+
+
+    public void addObserver(GameObserver gameObserver) {
+
+        gameObservers.add(gameObserver);
+    }
+
+    public void removeObserver(GameObserver gameObserver) {
+        gameObservers.remove(gameObserver);
+    }
+
+    public void notifyObserversThatGameEndedWithWinner(Player player, String gamessionId) {
+
+
+        // there should only be one observer ..?
+        gameObservers.get(0).onGameComplete(player, gamessionId);
 
     }
+
+
+
+
+
+
+}
 
 
 
