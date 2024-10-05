@@ -54,7 +54,10 @@ public class GameService {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode node = objectMapper.readTree(message);
             String userId = node.get("userId").asText();
-            if(userId != gamesMap.get(gameSessionId).getCurrentPlayer().toString()){
+            System.out.println(userId + "vs" + gamesMap.get(gameSessionId).getCurrentPlayer().getPlayerName());
+
+            // another if statement here to check if user is in game at all
+            if(!userId.matches(gamesMap.get(gameSessionId).getCurrentPlayer().getPlayerName().toString())){
                 // TEST THIS!!
                 throw new NotYourTurnException("Not your turn");
 
