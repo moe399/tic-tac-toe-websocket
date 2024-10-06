@@ -29,13 +29,15 @@ public class GameService implements GameInterface {
     // This game service is for the local game entit
     RedisTemplate<String, Object> redisTemplate;
     private final HashMap<String, Game> gamesMap = new HashMap<>();
-    private MatchmakingServiceClient matchmakingServiceClient;
-    private UserServiceClient userServiceClient;
+    private final MatchmakingServiceClient matchmakingServiceClient;
+    private final UserServiceClient userServiceClient;
     private final List<GameObserver> gameObservers = new ArrayList<>();
 
     @Autowired
-    public GameService(RedisTemplate<String, Object> redisTemplate) {
+    public GameService(RedisTemplate<String, Object> redisTemplate, MatchmakingServiceClient matchmakingServiceClient, UserServiceClient userServiceClient) {
         this.redisTemplate = redisTemplate;
+        this.matchmakingServiceClient = matchmakingServiceClient;
+        this.userServiceClient = userServiceClient;
 
     }
 

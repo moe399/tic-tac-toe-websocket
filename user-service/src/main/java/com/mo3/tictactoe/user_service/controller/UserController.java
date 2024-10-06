@@ -63,9 +63,9 @@ public class UserController {
 
 
 
-    @PostMapping("/user/update")
+    @PostMapping("/user/updatecount")
     public ResponseEntity<String> updateUserGameCount(@RequestBody UserGameUpdateDTO userGameUpdateDTO){
-
+        System.out.println("Update user game count function controller reached");
         try{
             userService.updateUserGameCount(userGameUpdateDTO);
             return ResponseEntity.ok("success");

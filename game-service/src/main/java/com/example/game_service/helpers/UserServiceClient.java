@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 // change to lb:// prod
-@FeignClient(name = "game-service", url = "http://localhost:8083")
+@FeignClient(name = "user-service", url = "http://localhost:8081")
 public interface UserServiceClient {
 
-    @PostMapping("/user/update")
-    public String updateUserGameStats(@RequestBody UserGameUpdateDTO userGameUpdateDTO);
+    @PostMapping("/user/updatecount")
+    String updateUserGameStats(@RequestBody UserGameUpdateDTO userGameUpdateDTO);
 
 
 }

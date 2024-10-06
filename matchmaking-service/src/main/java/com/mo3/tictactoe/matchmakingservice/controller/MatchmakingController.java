@@ -75,8 +75,7 @@ public class MatchmakingController {
 
     @PostMapping("/deletegame/{gamesessionId}")
     public ResponseEntity<String> removeGame(@PathVariable String gamesessionId){
-
-
+        System.out.println("Matchmaking service - delete game called ");
         try{
            String gameIdFromService = matchmakingService.removeGame(gamesessionId);
            return ResponseEntity.ok("Successfully removed game: " + gameIdFromService);
