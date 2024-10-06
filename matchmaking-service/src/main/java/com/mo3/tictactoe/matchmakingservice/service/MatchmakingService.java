@@ -158,4 +158,19 @@ public class MatchmakingService {
     }
 
 
+    public String removeGame(String gameSessionID) {
+
+        if (redisTemplate.hasKey(gameSessionID)) {
+            redisTemplate.delete(gameSessionID);
+            return gameSessionID;
+        }
+        else{
+            throw new GameNotFoundException("Game was not found");
+
+        }
+
+    }
+
+
+
 }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -98,25 +99,87 @@ public class WebSocketService implements GameObserver {
 
     }
 
+    public void closeSessionConnection(String gameSessionID) {
+
+
+        Set <String> keysList = sessions.keySet();
+
+        for (String key : keysList) {
+            if (key.equals(gameSessionID)) {
+                List<WebSocketSession> webSocketSessions = sessions.get(key);
+
+                for (WebSocketSession webSocketSession : webSocketSessions) {
+                    if (webSocketSession.isOpen()) {
+                        try{
+
+                            webSocketSession.close();
+
+                        } catch (Exception e) {
+                           throw new RuntimeException(e);
+                        }
+                    }
+                }
+
+            }
+        }
+
+
+    }
+
+
+
+
+
 
     @Override
-    public void onGameComplete(Player player, String gamesessionId) {
+    public void onGameComplete(Player winner, Player loser, boolean draw, String gamesessionId) {
 
         System.out.println("ON game end in observer from websocket service called!!!");
 
         String message = "Game complete";
-        String winner = player.getPlayerName().toString();
 
         Map<String, String > jsonHashMap = new HashMap<>();
 
-        jsonHashMap.put("Game Complete", "200");
-        jsonHashMap.put("winner", winner);
 
-        // maybe call userserivce to get username to send back
+        if(draw == true){
+
+            jsonHashMap.put("Game Complete", "200");
+            jsonHashMap.put("draw", "true");
+        }
+
+        else {
+
+            String winPlayer = winner.getPlayerName().toString();
+            String lossPlayer = loser.getPlayerName().toString();
+
+            jsonHashMap.put("Game Complete", "200");
+            jsonHashMap.put("winner", winner.getPlayerName().toString());
+            jsonHashMap.put("loser", loser.getPlayerName().toString());
+
+
+        }
+
+
+
+
         Gson gson = new Gson();
 
         String json = gson.toJson(jsonHashMap);
         System.out.println("Broadcasting message to sessions");
         broadcastMessage(gamesessionId, json );
+
+
+        Set<String> keys = sessions.keySet();
+
+
+        closeSessionConnection(gamesessionId);
+        sessions.remove(gamesessionId);
+
+
+
+
+        // close and delete session
+
+
     }
 }

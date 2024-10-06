@@ -1,11 +1,14 @@
 package com.example.game_service.Service;
 
+import com.example.game_service.dto.UserGameUpdateDTO;
 import com.example.game_service.entity.Game;
 import com.example.game_service.entity.Player;
 import com.example.game_service.exception.GameNotFoundException;
 import com.example.game_service.exception.NotYourTurnException;
 import com.example.game_service.helpers.GameInterface;
 import com.example.game_service.helpers.GameObserver;
+import com.example.game_service.helpers.MatchmakingServiceClient;
+import com.example.game_service.helpers.UserServiceClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,11 +28,10 @@ import java.util.Map;
 public class GameService implements GameInterface {
     // This game service is for the local game entit
     RedisTemplate<String, Object> redisTemplate;
-    private HashMap<String, Game> gamesMap = new HashMap<>();
-
-
-    private List<GameObserver> gameObservers = new ArrayList<>();
-
+    private final HashMap<String, Game> gamesMap = new HashMap<>();
+    private MatchmakingServiceClient matchmakingServiceClient;
+    private UserServiceClient userServiceClient;
+    private final List<GameObserver> gameObservers = new ArrayList<>();
 
     @Autowired
     public GameService(RedisTemplate<String, Object> redisTemplate) {
@@ -37,7 +39,7 @@ public class GameService implements GameInterface {
 
     }
 
-    public void createGameInMap(String gameSessionId, Long player1Id, Long player2Id ) {
+    public void createGameInMap(String gameSessionId, Long player1Id, Long player2Id) {
         // this method sets up game and adds to map
         Player player1 = new Player(player1Id, 'O', 0);
         Player player2 = new Player(player2Id, 'X', 1);
@@ -120,26 +122,32 @@ public class GameService implements GameInterface {
 
     // Callback function - called from within gameinstance end method
     @Override
-    public String endGameWithWinner(Player player, String gamesessionId) {
-
+    public String endGameWithWinner(Player winner, Player loser, boolean draw, String gamesessionId) {
         System.out.println("End game in gameservice with winner called");
-
-        notifyObserversThatGameEndedWithWinner(player, gamesessionId);
+        notifyObserversThatGameEndedWithWinner(winner, loser, draw,  gamesessionId);
 
         // maybe call user service to update the player games played and wins and also the other player as loser (feign client)
-
         // gracefully end game:
-            // 1. remove game from map
-            // 2. in mathcmaking service remove the game session from redis store
-            // 3. update userservice and (a). increment user game, and wins/losses, (b), change userIngame state to false;
+        // 1. remove game from map
+        gamesMap.remove(gamesessionId);
+        // 2. in matchmaking service remove the game session from redis store
+        matchmakingServiceClient.deleteGame(gamesessionId);
+
+
+        // 3. update userservice and (a). increment user game, and wins/losses, (b), change userIngame state to false;
+        // FOR WINNER
+        UserGameUpdateDTO userDTOForWinner = new UserGameUpdateDTO();
+        userDTOForWinner.setWin(1);
+        userDTOForWinner.setLoss(0);
+        userDTOForWinner.setDraw(0);
+        userDTOForWinner.setId(winner.getPlayerName());
+        userServiceClient.updateUserGameStats(userDTOForWinner);
+
 
         return "End Game with winner called!!!";
     }
 
-
-
     public void addObserver(GameObserver gameObserver) {
-
         gameObservers.add(gameObserver);
     }
 
@@ -147,17 +155,11 @@ public class GameService implements GameInterface {
         gameObservers.remove(gameObserver);
     }
 
-    public void notifyObserversThatGameEndedWithWinner(Player player, String gamessionId) {
-
-
+    public void notifyObserversThatGameEndedWithWinner(Player winner, Player loser, boolean draw, String gamessionId) {
         // there should only be one observer ..?
-        gameObservers.get(0).onGameComplete(player, gamessionId);
+        gameObservers.get(0).onGameComplete(winner, loser, draw, gamessionId);
 
     }
-
-
-
-
 
 
 }

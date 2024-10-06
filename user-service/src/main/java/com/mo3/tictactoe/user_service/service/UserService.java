@@ -1,6 +1,7 @@
 package com.mo3.tictactoe.user_service.service;
 
 import com.mo3.tictactoe.user_service.dto.UserDataResponseDTO;
+import com.mo3.tictactoe.user_service.dto.UserGameUpdateDTO;
 import com.mo3.tictactoe.user_service.dto.UserIdResponseDTO;
 import com.mo3.tictactoe.user_service.entity.User;
 import com.mo3.tictactoe.user_service.repository.UserRepository;
@@ -48,6 +49,22 @@ public class UserService {
         userDataResponseDTO.setUsername(user.getUsername());
 
         return userDataResponseDTO;
+    }
+
+
+
+    public void updateUserGameCount (UserGameUpdateDTO userGameUpdateDTO){
+
+        User user = userRepository.findById(userGameUpdateDTO.getId()).get();
+
+        user.setGamesWon(user.getGamesWon() + userGameUpdateDTO.getWin());
+        user.setGamesDrawn(user.getGamesDrawn() + userGameUpdateDTO.getDraw());
+        user.setGamesLost(user.getGamesLost() + userGameUpdateDTO.getLoss());
+        user.setGamesPlayed(user.getGamesPlayed() + 1);
+
+        userRepository.save(user);
+
+
     }
 
 

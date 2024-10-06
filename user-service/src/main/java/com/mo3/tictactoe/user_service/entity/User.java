@@ -28,6 +28,7 @@ public class User implements UserDetails {
     @ElementCollection
     private List<UUID> gameIDs;
     private Boolean isUserInGame;
+    private int gamesPlayed;
 
 
     public User() {

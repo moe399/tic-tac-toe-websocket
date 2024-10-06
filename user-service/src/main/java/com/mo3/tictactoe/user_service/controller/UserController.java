@@ -1,6 +1,7 @@
 package com.mo3.tictactoe.user_service.controller;
 
 import com.mo3.tictactoe.user_service.dto.UserDataResponseDTO;
+import com.mo3.tictactoe.user_service.dto.UserGameUpdateDTO;
 import com.mo3.tictactoe.user_service.dto.UserIdResponseDTO;
 import com.mo3.tictactoe.user_service.service.UserService;
 import lombok.AllArgsConstructor;
@@ -57,6 +58,24 @@ public class UserController {
 
 
         return ResponseEntity.ok(userService.updateUserGameStatus(stateToSendToService));
+
+    }
+
+
+
+    @PostMapping("/user/update")
+    public ResponseEntity<String> updateUserGameCount(@RequestBody UserGameUpdateDTO userGameUpdateDTO){
+
+        try{
+            userService.updateUserGameCount(userGameUpdateDTO);
+            return ResponseEntity.ok("success");
+        }
+
+        catch (Exception e){
+            logger.warning("Error updating user game count");
+            return ResponseEntity.badRequest().body("error");
+
+        }
 
     }
 
