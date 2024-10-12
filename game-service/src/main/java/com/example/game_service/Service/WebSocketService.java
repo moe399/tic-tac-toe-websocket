@@ -24,12 +24,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @AllArgsConstructor
 public class WebSocketService implements GameObserver {
-
     private final GameService gameService;
     private Map<String, List<WebSocketSession>> sessions = new ConcurrentHashMap<>();
     private final RedisTemplate<String, Object> redisTemplate;
-
-
 
     public void registerSession(String gameSessionID, WebSocketSession webSocketSession) {
         sessions.computeIfAbsent(gameSessionID, k -> new ArrayList<>()).add(webSocketSession);
@@ -39,8 +36,10 @@ public class WebSocketService implements GameObserver {
 
     public void processMessage(String gameSessionID, String message, WebSocketSession webSocketSession) throws IOException {
         try {
-            gameService.handleGameMove(gameSessionID, message);
+            gameService.handleGameMove(gameSessionID, message, webSocketSession);
             webSocketSession.sendMessage(new TextMessage("Success"));
+
+
         } catch (IOException e) {
             e.printStackTrace();
             webSocketSession.sendMessage(new TextMessage("Failure"));
@@ -74,17 +73,32 @@ public class WebSocketService implements GameObserver {
     }
 
 
-    public void broadcastMessage(String gameSessionID, String message) {
+    public WebSocketSession getSession(String gameSessionID) {
 
-        Set <String> keysList = sessions.keySet();
-
-        for (String key : keysList) {
+        Set<String> keySet = sessions.keySet();
+        for (String key: keySet){
             if (key.equals(gameSessionID)) {
                 List<WebSocketSession> webSocketSessions = sessions.get(key);
 
+                return webSocketSessions.get(0);
+
+
+            }
+            }
+
+
+        return null;
+
+    }
+
+    public void broadcastMessage(String gameSessionID, String message) {
+        Set<String> keysList = sessions.keySet();
+        for (String key : keysList) {
+            if (key.equals(gameSessionID)) {
+                List<WebSocketSession> webSocketSessions = sessions.get(key);
                 for (WebSocketSession webSocketSession : webSocketSessions) {
                     if (webSocketSession.isOpen()) {
-                        try{
+                        try {
                             System.out.println("web socket is open sending message");
                             webSocketSession.sendMessage(new TextMessage("TEST SEND BACK"));
                         } catch (IOException e) {
@@ -100,22 +114,17 @@ public class WebSocketService implements GameObserver {
     }
 
     public void closeSessionConnection(String gameSessionID) {
-
-
-        Set <String> keysList = sessions.keySet();
-
+        Set<String> keysList = sessions.keySet();
         for (String key : keysList) {
             if (key.equals(gameSessionID)) {
                 List<WebSocketSession> webSocketSessions = sessions.get(key);
-
                 for (WebSocketSession webSocketSession : webSocketSessions) {
                     if (webSocketSession.isOpen()) {
-                        try{
-
+                        try {
                             webSocketSession.close();
 
                         } catch (Exception e) {
-                           throw new RuntimeException(e);
+                            throw new RuntimeException(e);
                         }
                     }
                 }
@@ -126,60 +135,49 @@ public class WebSocketService implements GameObserver {
 
     }
 
+    public WebSocketSession returnWebSocketSession(String gameSessionID) {
+        System.out.println("Searching for game session ID: " + gameSessionID);
+        WebSocketSession webSocketSession = null;
+        Set<String> keysList = sessions.keySet();
+        System.out.println("Keyset size: " + keysList.size());
+        for (String key : keysList) {
+            if (key.equals(gameSessionID)) {
+                System.out.println("Key found in sessions list!");
+                List<WebSocketSession> webSocketSessions = sessions.get(key);
+                System.out.println("Returning WebSocketSession for game session ID: " + gameSessionID);
+                webSocketSession = webSocketSessions.get(0);
+
+            }
+        }
+        return webSocketSession;
 
 
-
-
+    }
 
     @Override
     public void onGameComplete(Player winner, Player loser, boolean draw, String gamesessionId) {
-
         System.out.println("ON game end in observer from websocket service called!!!");
-
         String message = "Game complete";
-
-        Map<String, String > jsonHashMap = new HashMap<>();
-
-
-        if(draw == true){
-
+        Map<String, String> jsonHashMap = new HashMap<>();
+        if (draw) {
             jsonHashMap.put("Game Complete", "200");
             jsonHashMap.put("draw", "true");
-        }
-
-        else {
-
+        } else {
             String winPlayer = winner.getPlayerName().toString();
             String lossPlayer = loser.getPlayerName().toString();
-
             jsonHashMap.put("Game Complete", "200");
             jsonHashMap.put("winner", winner.getPlayerName().toString());
             jsonHashMap.put("loser", loser.getPlayerName().toString());
 
 
         }
-
-
-
-
         Gson gson = new Gson();
-
         String json = gson.toJson(jsonHashMap);
         System.out.println("Broadcasting message to sessions");
-        broadcastMessage(gamesessionId, json );
-
-
+        broadcastMessage(gamesessionId, json);
         Set<String> keys = sessions.keySet();
-
-
         closeSessionConnection(gamesessionId);
         sessions.remove(gamesessionId);
-
-
-
-
         // close and delete session
-
-
     }
 }

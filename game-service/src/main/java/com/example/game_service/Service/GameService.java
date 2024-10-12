@@ -1,23 +1,23 @@
 package com.example.game_service.Service;
 
+import com.example.game_service.dto.UserDataResponseDTO;
 import com.example.game_service.dto.UserGameUpdateDTO;
 import com.example.game_service.entity.Game;
 import com.example.game_service.entity.Player;
 import com.example.game_service.exception.GameNotFoundException;
 import com.example.game_service.exception.NotYourTurnException;
-import com.example.game_service.helpers.GameInterface;
-import com.example.game_service.helpers.GameObserver;
-import com.example.game_service.helpers.MatchmakingServiceClient;
-import com.example.game_service.helpers.UserServiceClient;
+import com.example.game_service.helpers.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import jakarta.websocket.Session;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,12 +33,16 @@ public class GameService implements GameInterface {
     private final UserServiceClient userServiceClient;
     private final List<GameObserver> gameObservers = new ArrayList<>();
 
+    private final WebSocketService webSocketService;
+
+
+
     @Autowired
-    public GameService(RedisTemplate<String, Object> redisTemplate, MatchmakingServiceClient matchmakingServiceClient, UserServiceClient userServiceClient) {
+    public GameService(RedisTemplate<String, Object> redisTemplate, MatchmakingServiceClient matchmakingServiceClient, UserServiceClient userServiceClient, @Lazy WebSocketService webSocketService) {
         this.redisTemplate = redisTemplate;
         this.matchmakingServiceClient = matchmakingServiceClient;
         this.userServiceClient = userServiceClient;
-
+        this.webSocketService = webSocketService;
     }
 
     public void createGameInMap(String gameSessionId, Long player1Id, Long player2Id) {
@@ -63,7 +67,7 @@ public class GameService implements GameInterface {
         // Also maybe have to call matchmaking for this, to remove game from redis
     }
 
-    public void handleGameMove(String gameSessionId, String message) throws JsonProcessingException {
+    public void handleGameMove(String gameSessionId, String message, WebSocketSession session) throws JsonProcessingException {
         if (gamesMap.containsKey(gameSessionId)) {
             System.out.println("Game found!");
             ObjectMapper objectMapper = new ObjectMapper();
@@ -80,6 +84,35 @@ public class GameService implements GameInterface {
             System.out.println("UserId: " + userId);
             System.out.println("Content: " + content);
             gamesMap.get(gameSessionId).playRound(Long.valueOf(userId), content);
+
+            WebSocketSession webSocketSession = webSocketService.returnWebSocketSession(gameSessionId);
+
+//            String cookie = webSocketSession.getAttributes().get("Cookie").toString();
+            String cookie = "JSESSIONID=08141a9e-b0fc-4922-a57a-921debf65f77";
+            System.out.println("Passing in this cookie to the clientservicefeign: " + cookie);
+            System.out.println("DELETING Matchmaking " );
+            matchmakingServiceClient.deleteGame(gameSessionId);
+
+            // TEST REMOVE THIS BELOW!!!!!
+            System.out.println("SENDING FEIGN REQUEST");
+            UserGameUpdateDTO userDTOForWinner = new UserGameUpdateDTO();
+            userDTOForWinner.setWin(1);
+            userDTOForWinner.setLoss(0);
+            userDTOForWinner.setDraw(0);
+            userDTOForWinner.setId(1L);
+            System.out.println("calling get user details");
+
+            UserDataResponseDTO userDataResponseDTO = new UserDataResponseDTO();
+
+            userDataResponseDTO = userServiceClient.getUserDetails();
+
+
+
+//            userServiceClient.updateUserGameStats(userDTOForWinner);
+
+
+
+
 
 
         } else {
@@ -126,6 +159,16 @@ public class GameService implements GameInterface {
     @Override
     public String endGameWithWinner(Player winner, Player loser, boolean draw, String gamesessionId) {
         System.out.println("End game in gameservice with winner called");
+
+        WebSocketSession webSocketSession = webSocketService.returnWebSocketSession(gamesessionId);
+
+       String cookie = webSocketSession.getAttributes().get("Cookie").toString();
+
+
+
+
+        System.out.println("Cookie from websocket Sesh: " + cookie);
+
         notifyObserversThatGameEndedWithWinner(winner, loser, draw,  gamesessionId);
 
         // maybe call user service to update the player games played and wins and also the other player as loser (feign client)
@@ -136,15 +179,26 @@ public class GameService implements GameInterface {
         matchmakingServiceClient.deleteGame(gamesessionId);
 
 
-        // 3. update userservice and (a). increment user game, and wins/losses, (b), change userIngame state to false;
+        // 3. update userservice and (a). increment user game, and wins/losses
+        // , (b), change userIngame state to false;
         // FOR WINNER
         UserGameUpdateDTO userDTOForWinner = new UserGameUpdateDTO();
         userDTOForWinner.setWin(1);
         userDTOForWinner.setLoss(0);
         userDTOForWinner.setDraw(0);
         userDTOForWinner.setId(winner.getPlayerName());
-        userServiceClient.updateUserGameStats(userDTOForWinner);
 
+
+
+
+
+
+//        String cookie = webSocketSession.getAttributes().toString();
+//        System.out.println("INSIDE END GAME COOKIE: " +   cookie );
+
+//        userServiceClient.updateUserGameStats(userDTOForWinner);
+
+//        FeignCookieRequestContext.clear();
 
         return "End Game with winner called!!!";
     }

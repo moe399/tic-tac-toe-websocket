@@ -8,6 +8,7 @@ import com.mo3.tictactoe.user_service.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @Service
@@ -31,8 +34,11 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
-    private final SecurityContextRepository securityContextRepository;
+    private final RedisSecurityContextRepository securityContextRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+
+
 
     private static final Logger logger = Logger.getLogger(AuthService.class.getName());
 
@@ -63,6 +69,9 @@ public class AuthService {
 
     public LoginResponseDTO login(UserAuthRequestDTO userAuthRequest, HttpServletResponse response, HttpServletRequest request) {
 
+
+//        RedisSecurityContextRepository securityContextRepository = new RedisSecurityContextRepository();
+
         try {
             if (userRepository.existsByUsername(userAuthRequest.getUsername()) == false) {
 
@@ -75,16 +84,29 @@ public class AuthService {
             User user = userRepository.findByUsername(userAuthRequest.getUsername());
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userAuthRequest.getUsername(), userAuthRequest.getPassword());
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+//
+//
+            // REPLACE ABOVE WITH JUST REDIS MAYBE?
             securityContextRepository.saveContext(SecurityContextHolder.getContext(), request, response);
-            logger.info("Successfully logged in user");
-            logger.info("SESSION ID USER SERVICE: " + request.getSession().getId());
-            Cookie cookie = new Cookie("JSESSIONID", request.getSession().getId());
-            cookie.setHttpOnly(true);
-            cookie.setSecure(true);
-            cookie.setPath("/");
-            response.addCookie(cookie);
-            return new LoginResponseDTO("Successfully logged in", user.getUsername());
+
+
+            //
+//            logger.info("Successfully logged in user");
+
+
+
+//            HttpSession session = request.getSession();
+
+//
+
+
+
+
+
+            return new LoginResponseDTO("Successfully logged in", "aaa");
 
         } catch (Exception e) {
             logger.warning(e.getMessage());

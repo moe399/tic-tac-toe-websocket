@@ -8,6 +8,7 @@ import com.example.game_service.exception.RowExceededException;
 import com.example.game_service.helpers.GameInterface;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ public class Game {
     private Player winner;
     private Player loser;
     private boolean draw;
+
 
     public Game(List<Player> playerList, GameInterface gameInterface) {
         this.currentPlayer = playerList.get(0);

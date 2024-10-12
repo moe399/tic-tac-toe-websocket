@@ -12,19 +12,14 @@ public class SessionInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
+        String cookieToUse = FeignCookieRequestContext.getCookie();
         // Retrieve the cookies from the request
-        Cookie[] cookies = request.getCookies();
+        Cookie[] cookie = new Cookie[1];
 
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("JSESSIONID".equals(cookie.getName())) {
-                    String jsessionId = cookie.getValue();
-                    System.out.println("JSESSIONID: " + jsessionId);
-                }
-            }
-        }
-        assert cookies != null;
-        response.addCookie(cookies[0]);
+        cookie[0] = new Cookie(cookieToUse, request.getRequestURI());
+        System.out.println("Request sending");
+
+        response.addCookie(cookie[0]);
         return true;
     }
 

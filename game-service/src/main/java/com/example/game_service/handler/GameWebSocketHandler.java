@@ -56,7 +56,7 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
             session.close();
 
         }
-
+        System.out.println("Cookies: " + session.getAttributes().toString());
 
       webSocketService.processMessage(gameSessionID, message.getPayload(), session);
 

@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 @AllArgsConstructor
 public class SessionCheckFilter extends AbstractGatewayFilterFactory<SessionCheckFilter.Config> {
     @Autowired
-    private RedisTemplate<String, String> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     public static class Config {
     }
@@ -36,23 +36,35 @@ public class SessionCheckFilter extends AbstractGatewayFilterFactory<SessionChec
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
             logger.info("SessionFilter entered");
+            System.out.println("List of cookies: " );
+
+
             String requestPath = exchange.getRequest().getURI().getPath();
             if (requestPath.startsWith("/auth/")) {
                 logger.info("Skipping session validation for path: " + requestPath);
                 return chain.filter(exchange);
             }
+
+            exchange.getRequest().getHeaders().get("Cookie").forEach(cookie -> System.out.println(cookie));
+
             if (exchange.getRequest().getCookies().get("JSESSIONID") != null) {
                 String jsessionid = exchange.getRequest().getCookies().getFirst("JSESSIONID").getValue();
-                logger.info("JSESSIONID PASSED: " + jsessionid);
-                List<Object> sessionData = redisTemplate.opsForHash().values("spring:session:sessions:" + jsessionid);
-                if (!sessionData.isEmpty()) {
-                    logger.info("Returned session from Redis: " + sessionData);
+                if (redisTemplate.hasKey(jsessionid) == true) {
+                    logger.info("JSESSIONID PASSED: " + jsessionid);
                     return chain.filter(exchange);
+//                Object sessionData = redisTemplate.opsForValue().get(jsessionid);
                 } else {
-                    logger.warning("Invalid or expired session ID: " + jsessionid);
-                    exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                    return exchange.getResponse().setComplete();
+                    logger.warning("JSESSIONID NOT PASSED: " + jsessionid);
+                    return chain.filter(exchange);
                 }
+//                if (sessionData == null) {
+//                    logger.info("Returned session from Redis: " + sessionData);
+//                    return chain.filter(exchange);
+//                } else {
+//                    logger.warning("Invalid or expired session ID: " + jsessionid);
+//                    exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+//                    return exchange.getResponse().setComplete();
+//                }
             } else {
                 logger.warning("JSESSIONID cookie is missing for path: " + requestPath);
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
