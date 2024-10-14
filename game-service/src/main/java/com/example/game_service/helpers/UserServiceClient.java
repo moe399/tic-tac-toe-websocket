@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.*;
 @FeignClient(name = "user-service", url = "http://localhost:8081")
 public interface UserServiceClient {
 
-    @GetMapping("/user/getuserdetails")
-    UserDataResponseDTO getUserDetails();
 
-    @PostMapping("/user/update/{state}")
-    UserDataResponseDTO updateUserGameStatus(@PathVariable("state") String state);
+
+    @PostMapping("/user/updatecount")
+    void updateUserGameStats(@RequestBody UserGameUpdateDTO updateDTO);
+
 
 }

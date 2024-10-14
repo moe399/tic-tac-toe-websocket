@@ -22,16 +22,16 @@ import java.util.Arrays;
 
 
 
-
     @Override
     public void apply(RequestTemplate requestTemplate) {
+
+
         System.out.println("Interceptor feign called");
+        System.out.println("PRINTING COOKIE FROM CookieSTorage " + CookieStorage.getCookie());
 
 
+        String cookie = CookieStorage.getCookie();
 
-
-
-        String cookie = "JSESSIONID=ad08d7e7-674a-4cf1-a2e8-c85dc2852589;SESSION=YWQwOGQ3ZTctNjc0YS00Y2YxLWEyZTgtYzg1ZGMyODUyNTg5;";
 
             System.out.println("Printing cookie: " + cookie);
             if (cookie != null && cookie.contains("JSESSIONID")) {
@@ -41,6 +41,10 @@ import java.util.Arrays;
 
 
                 System.out.println("Adding JSESSIONID to Feign request: " + cookie);
+            }
+
+            else{
+                System.out.println("cookie not found: " + cookie + " in feignclinentinterceptonr" );
             }
             System.out.println(requestTemplate.headers().toString());
         System.out.println("Type: " + requestTemplate.method().toString());

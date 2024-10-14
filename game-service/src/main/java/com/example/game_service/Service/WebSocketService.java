@@ -37,8 +37,11 @@ public class WebSocketService implements GameObserver {
     public void processMessage(String gameSessionID, String message, WebSocketSession webSocketSession) throws IOException {
         try {
             gameService.handleGameMove(gameSessionID, message, webSocketSession);
-            webSocketSession.sendMessage(new TextMessage("Success"));
 
+            if(webSocketSession.isOpen()) {
+                webSocketSession.sendMessage(new TextMessage("Success"));
+
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -100,7 +103,7 @@ public class WebSocketService implements GameObserver {
                     if (webSocketSession.isOpen()) {
                         try {
                             System.out.println("web socket is open sending message");
-                            webSocketSession.sendMessage(new TextMessage("TEST SEND BACK"));
+                            webSocketSession.sendMessage(new TextMessage(message));
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }

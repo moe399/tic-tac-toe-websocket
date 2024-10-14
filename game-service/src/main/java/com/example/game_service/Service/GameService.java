@@ -85,35 +85,6 @@ public class GameService implements GameInterface {
             System.out.println("Content: " + content);
             gamesMap.get(gameSessionId).playRound(Long.valueOf(userId), content);
 
-            WebSocketSession webSocketSession = webSocketService.returnWebSocketSession(gameSessionId);
-
-//            String cookie = webSocketSession.getAttributes().get("Cookie").toString();
-            String cookie = "JSESSIONID=08141a9e-b0fc-4922-a57a-921debf65f77";
-            System.out.println("Passing in this cookie to the clientservicefeign: " + cookie);
-            System.out.println("DELETING Matchmaking " );
-            matchmakingServiceClient.deleteGame(gameSessionId);
-
-            // TEST REMOVE THIS BELOW!!!!!
-            System.out.println("SENDING FEIGN REQUEST");
-            UserGameUpdateDTO userDTOForWinner = new UserGameUpdateDTO();
-            userDTOForWinner.setWin(1);
-            userDTOForWinner.setLoss(0);
-            userDTOForWinner.setDraw(0);
-            userDTOForWinner.setId(1L);
-            System.out.println("calling get user details");
-
-            UserDataResponseDTO userDataResponseDTO = new UserDataResponseDTO();
-
-            userDataResponseDTO = userServiceClient.getUserDetails();
-
-
-
-//            userServiceClient.updateUserGameStats(userDTOForWinner);
-
-
-
-
-
 
         } else {
             throw new GameNotFoundException("Game not found with games map");
@@ -193,12 +164,9 @@ public class GameService implements GameInterface {
 
 
 
-//        String cookie = webSocketSession.getAttributes().toString();
-//        System.out.println("INSIDE END GAME COOKIE: " +   cookie );
 
-//        userServiceClient.updateUserGameStats(userDTOForWinner);
-
-//        FeignCookieRequestContext.clear();
+        userServiceClient.updateUserGameStats(userDTOForWinner);
+        CookieStorage.clearCookie();
 
         return "End Game with winner called!!!";
     }

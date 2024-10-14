@@ -40,6 +40,12 @@ public class RedisSecurityContextRepository implements SecurityContextRepository
 
         HttpServletRequest request = requestResponseHolder.getRequest();
         Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) {
+
+            return null;
+        }
+
         String jsessionId = "";
 
         for(int i = 0; i < cookies.length; i++) {

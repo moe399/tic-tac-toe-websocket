@@ -15,7 +15,9 @@ public class CookieHandshakeInterceptor implements HandshakeInterceptor {
         System.out.println("Intercepting before handshake");
         HttpSession session = ((ServletServerHttpRequest) request).getServletRequest().getSession();
         String cookie = request.getHeaders().getFirst("Cookie");
-        FeignCookieRequestContext.setCookie(cookie);
+
+        CookieStorage.setCookie(cookie);
+
         System.out.println("Cookie b4 handshake: " + cookie);
 
         if (cookie != null) {
