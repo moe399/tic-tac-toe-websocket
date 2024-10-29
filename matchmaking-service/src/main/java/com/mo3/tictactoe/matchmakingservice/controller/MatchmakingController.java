@@ -1,5 +1,6 @@
 package com.mo3.tictactoe.matchmakingservice.controller;
 
+import com.mo3.tictactoe.matchmakingservice.exceptions.UserAlreadyInGameException;
 import com.mo3.tictactoe.matchmakingservice.helpers.GameSession;
 import com.mo3.tictactoe.matchmakingservice.service.MatchmakingService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,9 +42,18 @@ public class MatchmakingController {
             }
             System.out.println("Reached get id controller");
             return ResponseEntity.ok("Successfully created game: " + gameId);
-        } catch (Exception e) {
+        } catch (UserAlreadyInGameException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+
+        catch (Exception e) {
+
+            return ResponseEntity.internalServerError().body(e.getMessage());
+
+        }
+
+
+
     }
 
 

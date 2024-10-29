@@ -13,6 +13,8 @@ public class GameSession implements Serializable {
 
     private Long player1id;
     private Long player2id;
+    private String usernamePlayer1;
+    private String usernamePlayer2;
     private String gameSessionId;
 
     public GameSession(Long player1id){

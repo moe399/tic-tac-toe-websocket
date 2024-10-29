@@ -56,6 +56,7 @@ public class MatchmakingService {
 
             Long player1Id = responseDTO.getId();
             GameSession sessionData = new GameSession(player1Id);
+            sessionData.setUsernamePlayer1(responseDTO.getUsername());
             sessionData.setGameSessionId(gameSessionID);
 
             // Store the session in Redis
@@ -100,6 +101,7 @@ public class MatchmakingService {
 
 
             gameSession.setPlayer2id(responseDTO.getId());
+            gameSession.setUsernamePlayer2(responseDTO.getUsername());
             redisTemplate.opsForValue().set(gameSessionID, gameSession);
             userServiceClient.updateUserGameStatus("true");
 
