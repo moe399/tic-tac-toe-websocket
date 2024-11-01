@@ -160,13 +160,35 @@ public class MatchmakingService {
     }
 
 
-    public String removeGame(String gameSessionID) {
+    public List<GameSession> listAvailableGames(){
 
+        Set<String> keys = redisTemplate.keys("*");
+        List<GameSession> gameSessions = new ArrayList<>();
+
+        for(String key : keys){
+            GameSession sessionData = (GameSession) redisTemplate.opsForValue().get(key);
+            if(sessionData.getUsernamePlayer2() == null || sessionData.getUsernamePlayer2().isEmpty())
+                gameSessions.add(sessionData);
+            }
+
+        return gameSessions;
+        }
+
+
+
+
+
+    public String removeGame(String gameSessionID) {
+        System.out.println("Deleting game!! in service called");
         if (redisTemplate.hasKey(gameSessionID)) {
             redisTemplate.delete(gameSessionID);
+            userServiceClient.updateUserGameStatus("false");
+            System.out.println("Deleting game!! in service called Finsihed");
+
             return gameSessionID;
         }
         else{
+            System.out.println("Game not found");
             throw new GameNotFoundException("Game was not found");
 
         }

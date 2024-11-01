@@ -19,6 +19,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -171,6 +172,28 @@ public class GameService implements GameInterface {
         return "End Game with winner called!!!";
     }
 
+
+    public String endGameBeforeEnd(String gamesessionId) throws IOException {
+        System.out.println("End game before end called");
+
+        gamesMap.remove(gamesessionId);
+        matchmakingServiceClient.deleteGame(gamesessionId);
+
+        webSocketService.onGameEndEarly(gamesessionId);
+
+
+        CookieStorage.clearCookie();
+
+        return "End Game before end called!!!";
+    }
+
+
+
+
+
+
+
+
     public void addObserver(GameObserver gameObserver) {
         gameObservers.add(gameObserver);
     }
@@ -184,6 +207,9 @@ public class GameService implements GameInterface {
         gameObservers.get(0).onGameComplete(winner, loser, draw, gamessionId);
 
     }
+
+
+
 
 
 }

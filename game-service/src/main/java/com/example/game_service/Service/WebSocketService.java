@@ -183,4 +183,29 @@ public class WebSocketService implements GameObserver {
         sessions.remove(gamesessionId);
         // close and delete session
     }
+
+
+
+
+    public void onGameEndEarly(String gameSessionId) throws IOException {
+
+        WebSocketSession webSocketSession = getSession(gameSessionId);
+
+
+        String message = "Opponent left the match, this game won't be recorded";
+        Map<String, String> jsonHashMap = new HashMap<>();
+
+            jsonHashMap.put("Opponent left the match", "300");
+
+
+
+
+        Gson gson = new Gson();
+        String json = gson.toJson(jsonHashMap);
+
+        webSocketSession.sendMessage(new TextMessage(json));
+
+        webSocketSession.close();
+
+    }
 }

@@ -41,7 +41,7 @@ public class MatchmakingController {
                 return ResponseEntity.badRequest().body("User in game");
             }
             System.out.println("Reached get id controller");
-            return ResponseEntity.ok("Successfully created game: " + gameId);
+            return ResponseEntity.ok(gameId);
         } catch (UserAlreadyInGameException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -66,6 +66,15 @@ public class MatchmakingController {
         return ResponseEntity.ok(matchmakingService.listAllGames());
     }
 
+
+
+    @GetMapping("/getavailablegame")
+    public ResponseEntity<List<GameSession>> getAvailableGames(){
+        return ResponseEntity.ok(matchmakingService.listAvailableGames());
+    }
+
+
+
     @PostMapping("/joingame/{gamesessionid}")
     public ResponseEntity<String> joinGame(@PathVariable String gamesessionid, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
 
@@ -80,6 +89,9 @@ public class MatchmakingController {
 
 
     }
+
+
+
 
 
 

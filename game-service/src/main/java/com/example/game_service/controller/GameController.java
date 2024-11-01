@@ -42,4 +42,24 @@ public class GameController {
 
     }
 
+
+    @PostMapping("/endgamebefore/{gameSessionId}")
+    public ResponseEntity<String> endGameBeforeEnd(@PathVariable String gameSessionId){
+
+
+
+        System.out.println("Game ctrller has been reached");
+
+        try{
+            gameService.endGameBeforeEnd(gameSessionId);
+            return ResponseEntity.ok("Game ended");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Unable to end game");
+        }
+
+    }
+
+
 }
