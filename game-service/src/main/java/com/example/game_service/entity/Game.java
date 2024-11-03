@@ -289,6 +289,13 @@ public class Game {
     }
 
 
+
+    public int [][] getGameBoardArrayNormal(){
+
+        return gameArray;
+
+    }
+
     public Player findPlayerById(Long userId) {
 
         return playerList.stream().filter(p -> p.getPlayerName().equals(userId))

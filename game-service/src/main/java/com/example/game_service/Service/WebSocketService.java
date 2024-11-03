@@ -4,6 +4,7 @@ import com.example.game_service.entity.Player;
 import com.example.game_service.helpers.GameInterface;
 import com.example.game_service.helpers.GameObserver;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import jakarta.websocket.Session;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -36,6 +38,8 @@ public class WebSocketService implements GameObserver {
 
     public void processMessage(String gameSessionID, String message, WebSocketSession webSocketSession) throws IOException {
         try {
+
+
             gameService.handleGameMove(gameSessionID, message, webSocketSession);
 
             if(webSocketSession.isOpen()) {
@@ -62,7 +66,11 @@ public class WebSocketService implements GameObserver {
                 for (WebSocketSession webSocketSession : webSocketSessions) {
                     if (webSocketSession.isOpen()) {
                         try {
-                            webSocketSession.sendMessage(new TextMessage(gameService.returnCurrentGameState(gameSessionID)));
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            Object gameState = gameService.returnCurrentGameState(gameSessionID);
+                            String jsonString = objectMapper.writeValueAsString(gameState);
+
+                            webSocketSession.sendMessage(new TextMessage(jsonString));
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }

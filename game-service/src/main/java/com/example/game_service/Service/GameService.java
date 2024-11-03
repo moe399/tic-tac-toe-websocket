@@ -1,5 +1,6 @@
 package com.example.game_service.Service;
 
+import com.example.game_service.dto.GameStateDTO;
 import com.example.game_service.dto.UserDataResponseDTO;
 import com.example.game_service.dto.UserGameUpdateDTO;
 import com.example.game_service.entity.Game;
@@ -95,10 +96,10 @@ public class GameService implements GameInterface {
 
     }
 
-    public String returnGameArray(String gameSessionId) {
+    public int [] [] returnGameArray(String gameSessionId) {
         if (gamesMap.containsKey(gameSessionId)) {
             System.out.println("Game found!");
-            return gamesMap.get(gameSessionId).getGameBoardString();
+            return gamesMap.get(gameSessionId).getGameBoardArrayNormal();
 
 
         } else {
@@ -107,23 +108,38 @@ public class GameService implements GameInterface {
                 System.out.println(key);
             }
         }
-        return "Error returning game map ";
+
+        int [][] ret = new int[0][0];
+        return ret;
     }
 
-    public String returnCurrentGameState(String gameSessionId) {
+    public GameStateDTO returnCurrentGameState(String gameSessionId) {
         Gson gson = new Gson();
         if (gamesMap.containsKey(gameSessionId)) {
-            String gameArray = returnGameArray(gameSessionId);
-            String currentPlayer = gamesMap.get(gameSessionId).getCurrentPlayer().getPlayerName().toString();
-            Map<String, String> gameState = new HashMap<>();
-            gameState.put("currentPlayer", currentPlayer);
-            gameState.put("gameArray", gameArray);
-            String json = gson.toJson(gameState);
-            return json;
+
+
+            GameStateDTO gameStateDTO = new GameStateDTO();
+
+            gameStateDTO.setCurrentPlayer(gamesMap.get(gameSessionId).getCurrentPlayer().getPlayerName());
+
+
+            gameStateDTO.setGameArray(returnGameArray(gameSessionId));
+
+
+            return gameStateDTO;
+
+
+//            String gameArray = returnGameArray(gameSessionId);
+//            String currentPlayer = gamesMap.get(gameSessionId).getCurrentPlayer().getPlayerName().toString();
+//            Map<String, String> gameState = new HashMap<>();
+//            gameState.put("currentPlayer", currentPlayer);
+//            gameState.put("gameArray", gameArray);
+//            String json = gson.toJson(gameState);
+//            return json;
 
 
         } else {
-            return "{}";
+            return new GameStateDTO();
         }
     }
 
