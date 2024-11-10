@@ -45,10 +45,10 @@ public class AuthController {
             LoginResponseDTO login = authService.login(userAuthRequestDTO, response, request);
             return ResponseEntity.status(HttpStatus.OK).body(login);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new LoginResponseDTO("Bad request supplied", null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new LoginResponseDTO("Bad request supplied", null, null));
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new LoginResponseDTO("Internal Server Error", null));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new LoginResponseDTO("Internal Server Error", null, null));
         }
 
 

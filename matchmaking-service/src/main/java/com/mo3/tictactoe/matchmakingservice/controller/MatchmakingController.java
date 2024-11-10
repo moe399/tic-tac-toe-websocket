@@ -1,5 +1,7 @@
 package com.mo3.tictactoe.matchmakingservice.controller;
 
+import com.mo3.tictactoe.matchmakingservice.dto.CreateGameSuccessDTO;
+import com.mo3.tictactoe.matchmakingservice.dto.NewGameDTO;
 import com.mo3.tictactoe.matchmakingservice.exceptions.UserAlreadyInGameException;
 import com.mo3.tictactoe.matchmakingservice.helpers.GameSession;
 import com.mo3.tictactoe.matchmakingservice.service.MatchmakingService;
@@ -76,16 +78,20 @@ public class MatchmakingController {
 
 
     @PostMapping("/joingame/{gamesessionid}")
-    public ResponseEntity<String> joinGame(@PathVariable String gamesessionid, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
+    public ResponseEntity<NewGameDTO> joinGame(@PathVariable String gamesessionid, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
+//
+//        try{
+//            NewGameDTO createGameSuccessDTO = matchmakingService.joinGame(gamesessionid,httpServletRequest, httpServletResponse);
+//            return ResponseEntity.ok(createGameSuccessDTO);
+//        }
+//
+//        catch (Exception e){
+//            return ResponseEntity.badRequest().body(new NewGameDTO(null, null, null,));
+//        }
 
-        try{
-            String websocketurl = matchmakingService.joinGame(gamesessionid,httpServletRequest, httpServletResponse);
-            return ResponseEntity.ok("Successfully joined game: " + websocketurl);
-        }
+        NewGameDTO newGameDTO = matchmakingService.joinGame(gamesessionid, httpServletRequest, httpServletResponse);
 
-        catch (Exception e){
-            return ResponseEntity.badRequest().body("Unable to join game: " + gamesessionid);
-        }
+        return ResponseEntity.ok(newGameDTO);
 
 
     }

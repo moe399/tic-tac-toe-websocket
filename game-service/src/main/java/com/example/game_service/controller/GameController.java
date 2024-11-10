@@ -2,6 +2,7 @@ package com.example.game_service.controller;
 
 
 import com.example.game_service.Service.GameService;
+import com.example.game_service.dto.NewGameDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -28,16 +29,17 @@ public class GameController {
 
 
     @PostMapping("/startgame/{sessionId}/{player1id}/{player2id}")
-    public ResponseEntity<String> startGame(@PathVariable String sessionId, @PathVariable Long player1id, @PathVariable Long player2id){
+    public ResponseEntity<NewGameDTO> startGame(@PathVariable String sessionId, @PathVariable Long player1id, @PathVariable Long player2id){
 
         try {
-            gameService.createGameInMap(sessionId, player1id, player2id);
-            return ResponseEntity.ok("Game started");
+            NewGameDTO newGameDTO = gameService.createGameInMap(sessionId, player1id, player2id);
+            return ResponseEntity.ok(newGameDTO);
         }
 
         catch (Exception e){
             e.printStackTrace();
-            return ResponseEntity.badRequest().body("Unable to start game");
+            NewGameDTO newGameDTO = new NewGameDTO(null, null, null, 'F', 'F');
+            return ResponseEntity.badRequest().body(newGameDTO);
         }
 
     }

@@ -7,13 +7,15 @@ import lombok.Setter;
 @Getter
 public class LoginResponseDTO {
 
-    public LoginResponseDTO(String message, String username) {
+    public LoginResponseDTO(String message, String username, Long id) {
         this.message = message;
         this.username = username;
+        this.id = id;
     }
 
     private String message;
     private String username;
+    private Long id;
 
 
 }

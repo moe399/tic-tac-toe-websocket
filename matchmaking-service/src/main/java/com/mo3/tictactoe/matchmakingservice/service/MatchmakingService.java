@@ -1,6 +1,8 @@
 package com.mo3.tictactoe.matchmakingservice.service;
 
 
+import com.mo3.tictactoe.matchmakingservice.dto.CreateGameSuccessDTO;
+import com.mo3.tictactoe.matchmakingservice.dto.NewGameDTO;
 import com.mo3.tictactoe.matchmakingservice.dto.UserDataResponseDTO;
 import com.mo3.tictactoe.matchmakingservice.exceptions.GameIsFullException;
 import com.mo3.tictactoe.matchmakingservice.exceptions.GameNotFoundException;
@@ -78,7 +80,7 @@ public class MatchmakingService {
     }
 
 
-    public String joinGame(String gameSessionID, HttpServletRequest request, HttpServletResponse response) {
+    public NewGameDTO joinGame(String gameSessionID, HttpServletRequest request, HttpServletResponse response) {
 
 
 
@@ -124,8 +126,14 @@ public class MatchmakingService {
             String host = request.getServerName();
             int port = request.getServerPort();
             gameUrl = "ws://" + APIGATEWAY_HOSTNAMEANDPORT +"/game/ws/game/" + gameSessionID;
-            gameServiceClient.startGame(gameSessionID, gameSession.getPlayer1id(), gameSession.getPlayer2id());
+            System.out.println(gameUrl + " <--- gameurl");
+          NewGameDTO newGameDTO =  gameServiceClient.startGame(gameSessionID, gameSession.getPlayer1id(), gameSession.getPlayer2id());
+            redisTemplate.convertAndSend(gameSessionID, "READY");
 
+//            CreateGameSuccessDTO createGameSuccessDTO = new CreateGameSuccessDTO(gameUrl, newGameDTO);
+
+
+            return newGameDTO;
 
             // make sure to find out if this returns success or not
         }
@@ -135,10 +143,11 @@ public class MatchmakingService {
 
 
 
-            redisTemplate.convertAndSend(gameSessionID, "Game Ready! " + "url: " + gameUrl);
+
+
+//            redisTemplate.convertAndSend(gameSessionID, "Game Ready! " + "url: " + gameUrl);
 
             // Start game service, redirect or something
-            return gameUrl;
         }
 
 

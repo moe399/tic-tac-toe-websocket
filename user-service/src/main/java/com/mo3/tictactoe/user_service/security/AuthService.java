@@ -81,7 +81,7 @@ public class AuthService {
 //            logger.info("Successfully logged in user");
 //            HttpSession session = request.getSession();
 //
-            return new LoginResponseDTO("Successfully logged in", "aaa");
+            return new LoginResponseDTO("Successfully logged in", user.getUsername(), user.getId());
 
         } catch (Exception e) {
             logger.warning(e.getMessage());

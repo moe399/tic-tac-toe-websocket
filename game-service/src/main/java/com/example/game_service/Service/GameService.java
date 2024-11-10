@@ -1,7 +1,7 @@
 package com.example.game_service.Service;
 
+import com.example.game_service.dto.NewGameDTO;
 import com.example.game_service.dto.GameStateDTO;
-import com.example.game_service.dto.UserDataResponseDTO;
 import com.example.game_service.dto.UserGameUpdateDTO;
 import com.example.game_service.entity.Game;
 import com.example.game_service.entity.Player;
@@ -12,8 +12,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import jakarta.websocket.Session;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,7 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class GameService implements GameInterface {
@@ -47,7 +44,7 @@ public class GameService implements GameInterface {
         this.webSocketService = webSocketService;
     }
 
-    public void createGameInMap(String gameSessionId, Long player1Id, Long player2Id) {
+    public NewGameDTO createGameInMap(String gameSessionId, Long player1Id, Long player2Id) {
         // this method sets up game and adds to map
         Player player1 = new Player(player1Id, 'O', 0);
         Player player2 = new Player(player2Id, 'X', 1);
@@ -60,7 +57,8 @@ public class GameService implements GameInterface {
         // fetch user id or both players and set them as game id's, or username...
         gamesMap.put(gameSessionId, game);
         System.out.println("Created game in map with both players - session id: " + gameSessionId);
-
+        NewGameDTO newGameDTO = new NewGameDTO(gameSessionId, player1Id, player2Id, player1.getLetter(), player2.getLetter());
+        return newGameDTO;
     }
 
     public void removeGameFromMap(String gameSessionId) {
@@ -69,8 +67,13 @@ public class GameService implements GameInterface {
         // Also maybe have to call matchmaking for this, to remove game from redis
     }
 
+
+
+
     public void handleGameMove(String gameSessionId, String message, WebSocketSession session) throws JsonProcessingException {
         if (gamesMap.containsKey(gameSessionId)) {
+
+
             System.out.println("Game found!");
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode node = objectMapper.readTree(message);
