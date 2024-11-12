@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 public interface GameServiceClient {
 
 
-    @PostMapping("/startgame/{sessionId}/{player1id}/{player2id}")
-    NewGameDTO startGame(@PathVariable("sessionId") String sessionId, @PathVariable Long player1id, @PathVariable Long player2id);
+    @PostMapping("/startgame/{sessionId}/{player1id}/{player2id}/{usernamePlayer1}/{usernamePlayer2}")
+    NewGameDTO startGame(@PathVariable("sessionId") String sessionId, @PathVariable Long player1id, @PathVariable Long player2id, @PathVariable String usernamePlayer1, @PathVariable String usernamePlayer2);
 
 
 

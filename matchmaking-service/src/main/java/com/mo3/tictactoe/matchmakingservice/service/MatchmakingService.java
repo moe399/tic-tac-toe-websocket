@@ -81,8 +81,7 @@ public class MatchmakingService {
 
 
     public NewGameDTO joinGame(String gameSessionID, HttpServletRequest request, HttpServletResponse response) {
-
-
+        System.out.println("join game called");
 
 
             UserDataResponseDTO responseDTO = userServiceClient.getUserDetails();
@@ -121,13 +120,16 @@ public class MatchmakingService {
 
                 throw new GameNotFoundException("Game was not found");
             }
-
+            System.out.println("game join func goign to start game soon");
 
             String host = request.getServerName();
             int port = request.getServerPort();
             gameUrl = "ws://" + APIGATEWAY_HOSTNAMEANDPORT +"/game/ws/game/" + gameSessionID;
             System.out.println(gameUrl + " <--- gameurl");
-          NewGameDTO newGameDTO =  gameServiceClient.startGame(gameSessionID, gameSession.getPlayer1id(), gameSession.getPlayer2id());
+            System.out.println("Adding to game username1: " + gameSession.getUsernamePlayer1());
+
+            System.out.println("Adding to game username2: " + gameSession.getUsernamePlayer2());
+          NewGameDTO newGameDTO =  gameServiceClient.startGame(gameSessionID, gameSession.getPlayer1id(), gameSession.getPlayer2id(), gameSession.getUsernamePlayer1(), gameSession.getUsernamePlayer2());
             redisTemplate.convertAndSend(gameSessionID, "READY");
 
 //            CreateGameSuccessDTO createGameSuccessDTO = new CreateGameSuccessDTO(gameUrl, newGameDTO);

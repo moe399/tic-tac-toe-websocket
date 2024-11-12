@@ -1,5 +1,6 @@
 package com.example.game_service.Service;
 
+import com.example.game_service.dto.GameInfoDTO;
 import com.example.game_service.dto.NewGameDTO;
 import com.example.game_service.dto.GameStateDTO;
 import com.example.game_service.dto.UserGameUpdateDTO;
@@ -44,10 +45,10 @@ public class GameService implements GameInterface {
         this.webSocketService = webSocketService;
     }
 
-    public NewGameDTO createGameInMap(String gameSessionId, Long player1Id, Long player2Id) {
+    public NewGameDTO createGameInMap(String gameSessionId, Long player1Id, Long player2Id, String usernamePlayer1, String usernamePlayer2) {
         // this method sets up game and adds to map
-        Player player1 = new Player(player1Id, 'O', 0);
-        Player player2 = new Player(player2Id, 'X', 1);
+        Player player1 = new Player(player1Id, 'O', 0, usernamePlayer1);
+        Player player2 = new Player(player2Id, 'X', 1, usernamePlayer2);
         List<Player> playerList = new ArrayList<>();
         playerList.add(player1);
         playerList.add(player2);
@@ -145,6 +146,31 @@ public class GameService implements GameInterface {
             return new GameStateDTO();
         }
     }
+
+
+    public GameInfoDTO returnGameInfo(String gameSessionId) {
+
+        if(gamesMap.containsKey(gameSessionId)){
+
+            Game currentGame = gamesMap.get(gameSessionId);
+
+            Long userId1 = currentGame.getPlayerList().get(0).getPlayerName();
+            Long userId2 = currentGame.getPlayerList().get(1).getPlayerName();
+            String usernamePlayer1 = currentGame.getPlayerList().get(0).getUsername();
+
+            String usernamePlayer2 = currentGame.getPlayerList().get(1).getUsername();
+
+            GameInfoDTO gameInfoDTO = new GameInfoDTO(gameSessionId, userId1, userId2, usernamePlayer1, usernamePlayer2);
+
+            return gameInfoDTO;
+        }
+
+        else{
+            return new GameInfoDTO(gameSessionId, 0, 0, null,  null);
+        }
+
+    }
+
 
     // Callback function - called from within gameinstance end method
     @Override

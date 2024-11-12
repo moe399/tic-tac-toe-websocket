@@ -1,7 +1,7 @@
 package com.example.game_service.controller;
 
-
 import com.example.game_service.Service.GameService;
+import com.example.game_service.dto.GameInfoDTO;
 import com.example.game_service.dto.NewGameDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,28 +15,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @AllArgsConstructor
 public class GameController {
-
-
     private final GameService gameService;
 
     @GetMapping("/test")
-    public String testContoller(){
-
+    public String testContoller() {
         return "Hello from game service";
 
     }
 
-
-
-    @PostMapping("/startgame/{sessionId}/{player1id}/{player2id}")
-    public ResponseEntity<NewGameDTO> startGame(@PathVariable String sessionId, @PathVariable Long player1id, @PathVariable Long player2id){
-
+    @PostMapping("/startgame/{sessionId}/{player1id}/{player2id}/{usernamePlayer1}/{usernamePlayer2}")
+    public ResponseEntity<NewGameDTO> startGame(@PathVariable String sessionId, @PathVariable Long player1id, @PathVariable Long player2id, @PathVariable String usernamePlayer1, @PathVariable String usernamePlayer2) {
         try {
-            NewGameDTO newGameDTO = gameService.createGameInMap(sessionId, player1id, player2id);
+            NewGameDTO newGameDTO = gameService.createGameInMap(sessionId, player1id, player2id, usernamePlayer1, usernamePlayer2);
             return ResponseEntity.ok(newGameDTO);
-        }
-
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             NewGameDTO newGameDTO = new NewGameDTO(null, null, null, 'F', 'F');
             return ResponseEntity.badRequest().body(newGameDTO);
@@ -44,24 +36,42 @@ public class GameController {
 
     }
 
-
     @PostMapping("/endgamebefore/{gameSessionId}")
-    public ResponseEntity<String> endGameBeforeEnd(@PathVariable String gameSessionId){
-
-
-
+    public ResponseEntity<String> endGameBeforeEnd(@PathVariable String gameSessionId) {
         System.out.println("Game ctrller has been reached");
-
-        try{
+        try {
             gameService.endGameBeforeEnd(gameSessionId);
             return ResponseEntity.ok("Game ended");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("Unable to end game");
         }
 
     }
+
+
+   @GetMapping("/getgameinfo/{sessionId}")
+   public ResponseEntity<GameInfoDTO> getGameInfo(@PathVariable String sessionId) {
+
+        try{
+            return ResponseEntity.ok(gameService.returnGameInfo(sessionId));
+        }
+
+        catch (Exception e) {
+
+          e.printStackTrace();
+          return ResponseEntity.badRequest().body(null);
+        }
+
+
+
+
+
+
+   }
+
+
+
 
 
 }
