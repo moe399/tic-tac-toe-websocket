@@ -14,6 +14,8 @@ public class GameInfoDTO {
    private long user2ID;
    private String usernamePlayer1;
    private String usernamePlayer2;
+   private char user1Letter;
+   private char user2Letter;
 
 
 

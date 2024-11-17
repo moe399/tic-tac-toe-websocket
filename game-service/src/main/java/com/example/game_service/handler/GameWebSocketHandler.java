@@ -48,6 +48,8 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
 
 
+
+
         String query = session.getUri().getQuery();
         String gameSessionID = query.split("=")[1];
 
@@ -58,9 +60,14 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
         }
         System.out.println("Cookies: " + session.getAttributes().toString());
 
-      webSocketService.processMessage(gameSessionID, message.getPayload(), session);
+        try {
+            webSocketService.processMessage(gameSessionID, message.getPayload(), session);
+            webSocketService.broadcastGameArray(gameSessionID);
+        }
 
-        webSocketService.broadcastGameArray(gameSessionID);
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
 
     }
 

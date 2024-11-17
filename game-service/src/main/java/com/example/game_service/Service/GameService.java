@@ -157,16 +157,16 @@ public class GameService implements GameInterface {
             Long userId1 = currentGame.getPlayerList().get(0).getPlayerName();
             Long userId2 = currentGame.getPlayerList().get(1).getPlayerName();
             String usernamePlayer1 = currentGame.getPlayerList().get(0).getUsername();
-
             String usernamePlayer2 = currentGame.getPlayerList().get(1).getUsername();
-
-            GameInfoDTO gameInfoDTO = new GameInfoDTO(gameSessionId, userId1, userId2, usernamePlayer1, usernamePlayer2);
+            char user1Letter = currentGame.getPlayerList().get(0).getLetter();
+            char user2Letter = currentGame.getPlayerList().get(1).getLetter();
+            GameInfoDTO gameInfoDTO = new GameInfoDTO(gameSessionId, userId1, userId2, usernamePlayer1, usernamePlayer2, user1Letter, user2Letter);
 
             return gameInfoDTO;
         }
 
         else{
-            return new GameInfoDTO(gameSessionId, 0, 0, null,  null);
+            return new GameInfoDTO(gameSessionId, 0, 0, null,  null, 'F',  'F');
         }
 
     }
