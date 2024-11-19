@@ -6,6 +6,7 @@ import com.mo3.tictactoe.user_service.dto.RegisterationResponseDTO;
 import com.mo3.tictactoe.user_service.dto.UserAuthRequestDTO;
 import com.mo3.tictactoe.user_service.entity.User;
 import com.mo3.tictactoe.user_service.repository.UserRepository;
+import com.mo3.tictactoe.user_service.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,6 +41,7 @@ public class AuthService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private static final Logger logger = Logger.getLogger(AuthService.class.getName());
     private final GameServiceClient gameServiceClient;
+    private final UserService userService;
 
     public RegisterationResponseDTO register(UserAuthRequestDTO userAuthRequest) {
         logger.info("Attempting to register user");
@@ -102,6 +104,8 @@ public class AuthService {
 
 
         User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+
+
         System.out.println("before gameserviceclient request");
         gameServiceClient.endGameBefore(gameSessionID);
 

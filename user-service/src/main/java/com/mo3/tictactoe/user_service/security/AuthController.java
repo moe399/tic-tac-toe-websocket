@@ -54,10 +54,11 @@ public class AuthController {
 
     }
     // This route has to be authenticated first to be used
-
-    @PostMapping("/logout/{gameSessionID}")
+    // which means cant use /auth as it is unauthenticate endpoint group
+    @PostMapping("/user/logout/{gameSessionID}")
     public ResponseEntity<String> logout(@PathVariable String gameSessionID) {
         // Check if user is in game
+        System.out.println("Called logout with gameSessionID");
         if (gameSessionID != null) {
             return authService.logout(gameSessionID);
 
@@ -68,9 +69,13 @@ public class AuthController {
 
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/user/logout")
     public ResponseEntity<String> logoutWithoutSessionID() {
+
+        System.out.println("Called logout without gameSessionID");
         return ResponseEntity.ok("Logged out successfully without a specific game session.");
+
+
     }
 
 }
