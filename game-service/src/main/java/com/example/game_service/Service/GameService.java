@@ -221,8 +221,8 @@ public class GameService implements GameInterface {
     public String endGameBeforeEnd(String gamesessionId) throws IOException {
         System.out.println("End game before end called");
 
-        gamesMap.remove(gamesessionId);
         matchmakingServiceClient.deleteGame(gamesessionId);
+        gamesMap.remove(gamesessionId);
 
         webSocketService.onGameEndEarly(gamesessionId);
 

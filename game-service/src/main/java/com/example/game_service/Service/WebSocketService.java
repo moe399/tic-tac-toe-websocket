@@ -207,8 +207,10 @@ public class WebSocketService implements GameObserver {
 
 
     public void onGameEndEarly(String gameSessionId) throws IOException {
-
+        System.out.println("ending game");
         WebSocketSession webSocketSession = getSession(gameSessionId);
+
+
 
 
         String message = "Opponent left the match, this game won't be recorded";
@@ -222,7 +224,9 @@ public class WebSocketService implements GameObserver {
         Gson gson = new Gson();
         String json = gson.toJson(jsonHashMap);
 
-        webSocketSession.sendMessage(new TextMessage(json));
+        broadcastMessage(gameSessionId, json);
+
+//        webSocketSession.sendMessage(new TextMessage(json));
 
         webSocketSession.close();
 
