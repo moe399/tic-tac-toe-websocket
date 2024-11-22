@@ -193,7 +193,10 @@ public class MatchmakingService {
         System.out.println("Deleting game!! in service called");
         if (redisTemplate.hasKey(gameSessionID)) {
             redisTemplate.delete(gameSessionID);
-//            userServiceClient.updateUserGameStatus("false");
+            System.out.println("Before USERCLIENT CALLED");
+            userServiceClient.updateUserGameStatus("false");
+
+            System.out.println("AFTER USERCLIENT CALLED");
             System.out.println("Deleting game!! in service called Finsihed");
 
             return gameSessionID;

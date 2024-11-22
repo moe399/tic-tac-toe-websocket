@@ -42,7 +42,7 @@ public class UserController {
 
     @PostMapping("/user/update/{state}" )
     public ResponseEntity<UserDataResponseDTO> updateUser(@PathVariable String state){
-
+        System.out.println("Update User controller called");
         Boolean stateToSendToService = false;
 
         if(state.matches("true")){

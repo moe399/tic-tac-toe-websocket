@@ -184,6 +184,8 @@ public class WebSocketService implements GameObserver {
         if (draw) {
             jsonHashMap.put("Game Complete", "200");
             jsonHashMap.put("draw", "true");
+
+
         } else {
             String winPlayer = winner.getPlayerName().toString();
             String lossPlayer = loser.getPlayerName().toString();
