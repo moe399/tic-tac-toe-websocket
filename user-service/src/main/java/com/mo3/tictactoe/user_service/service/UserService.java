@@ -64,7 +64,7 @@ public class UserService {
         user.setGamesDrawn(user.getGamesDrawn() + userGameUpdateDTO.getDraw());
         user.setGamesLost(user.getGamesLost() + userGameUpdateDTO.getLoss());
         user.setGamesPlayed(user.getGamesPlayed() + 1);
-
+        user.setIsUserInGame(false);
 
         userRepository.save(user);
 

@@ -237,11 +237,13 @@ public class GameService implements GameInterface {
             userDTOForLoser.setId(loser.getPlayerName());
 
 
+
             userServiceClient.updateUserGameStats(userDTOForWinner);
             userServiceClient.updateUserGameStats(userDTOForLoser);
 
 
         }
+
 
 
         CookieStorage.clearCookie();
