@@ -30,6 +30,7 @@ public class UserService {
         userDataResponseDTO.setWins(user.getGamesWon());
         userDataResponseDTO.setDraws(user.getGamesDrawn());
         userDataResponseDTO.setLosses(user.getGamesLost());
+        userDataResponseDTO.setTotalGames(user.getGamesPlayed());
 
         System.out.println("USER RESPONSE DTO");
         System.out.println(userDataResponseDTO);

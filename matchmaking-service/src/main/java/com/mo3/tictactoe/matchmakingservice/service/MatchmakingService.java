@@ -176,8 +176,11 @@ public class MatchmakingService {
         Set<String> keys = redisTemplate.keys("*");
         List<GameSession> gameSessions = new ArrayList<>();
 
+
+
         for(String key : keys){
             GameSession sessionData = (GameSession) redisTemplate.opsForValue().get(key);
+
             if(sessionData.getUsernamePlayer2() == null || sessionData.getUsernamePlayer2().isEmpty())
                 gameSessions.add(sessionData);
             }

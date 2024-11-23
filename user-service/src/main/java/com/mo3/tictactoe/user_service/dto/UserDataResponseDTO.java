@@ -14,6 +14,7 @@ public class UserDataResponseDTO {
     private int wins;
     private int losses;
     private int draws;
+    private int totalGames;
 
 
 }
