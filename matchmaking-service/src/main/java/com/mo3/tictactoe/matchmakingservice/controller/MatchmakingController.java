@@ -75,6 +75,13 @@ public class MatchmakingController {
         return ResponseEntity.ok(matchmakingService.listAvailableGames());
     }
 
+    @GetMapping("/getnumberofavailablegame")
+    public ResponseEntity<String> getNumberOfAvailableGames(){
+        System.out.println("List number of games called");
+
+        return ResponseEntity.ok(String.valueOf(matchmakingService.listAvailableGames().size()));
+    }
+
 
 
     @PostMapping("/joingame/{gamesessionid}")
