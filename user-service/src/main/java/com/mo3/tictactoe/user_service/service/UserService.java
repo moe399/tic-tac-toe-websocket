@@ -27,6 +27,9 @@ public class UserService {
         userDataResponseDTO.setUsername(user.getUsername());
         userDataResponseDTO.setId(user.getId());
         userDataResponseDTO.setGameState(user.getIsUserInGame());
+        userDataResponseDTO.setWins(user.getGamesWon());
+        userDataResponseDTO.setDraws(user.getGamesDrawn());
+        userDataResponseDTO.setLosses(user.getGamesLost());
 
         System.out.println("USER RESPONSE DTO");
         System.out.println(userDataResponseDTO);
@@ -54,7 +57,7 @@ public class UserService {
 
 
     public void updateUserGameCount (UserGameUpdateDTO userGameUpdateDTO){
-
+        System.out.println("Updating user: " + userGameUpdateDTO.getId() + " with a: " + userGameUpdateDTO.getWin());
         User user = userRepository.findById(userGameUpdateDTO.getId()).get();
 
         user.setGamesWon(user.getGamesWon() + userGameUpdateDTO.getWin());
@@ -62,10 +65,14 @@ public class UserService {
         user.setGamesLost(user.getGamesLost() + userGameUpdateDTO.getLoss());
         user.setGamesPlayed(user.getGamesPlayed() + 1);
 
+
         userRepository.save(user);
 
 
     }
+
+
+
 
 
 

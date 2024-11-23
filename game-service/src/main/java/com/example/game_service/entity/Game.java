@@ -226,6 +226,7 @@ public class Game {
             hasGameEnded = true;
             winner = null;
             loser = null;
+            draw = true;
             endGame();
 
             return;
@@ -241,7 +242,7 @@ public class Game {
 
 
     public void endGame() {
-        System.out.println("End game function in game instance called");
+        System.out.println("End game function in game instance called: " + draw);
         gameInterface.endGameWithWinner(winner, loser, draw, gamesessionId);
         setHasGameEnded(true);
 

@@ -179,9 +179,11 @@ public class WebSocketService implements GameObserver {
     @Override
     public void onGameComplete(Player winner, Player loser, boolean draw, String gamesessionId) {
         System.out.println("ON game end in observer from websocket service called!!!");
+        System.out.println("draw state: " + draw);
         String message = "Game complete";
         Map<String, String> jsonHashMap = new HashMap<>();
         if (draw) {
+            System.out.println("Entered draw block");
             jsonHashMap.put("Game Complete", "200");
             jsonHashMap.put("draw", "true");
 
@@ -192,6 +194,8 @@ public class WebSocketService implements GameObserver {
             jsonHashMap.put("Game Complete", "200");
             jsonHashMap.put("winner", winner.getPlayerName().toString());
             jsonHashMap.put("loser", loser.getPlayerName().toString());
+
+
 
 
         }

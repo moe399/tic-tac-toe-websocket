@@ -181,6 +181,7 @@ public class GameService implements GameInterface {
 
        String cookie = webSocketSession.getAttributes().get("Cookie").toString();
 
+        GameInfoDTO gameInfoDTO = returnGameInfo(gamesessionId);
 
 
 
@@ -199,19 +200,50 @@ public class GameService implements GameInterface {
         // 3. update userservice and (a). increment user game, and wins/losses
         // , (b), change userIngame state to false;
         // FOR WINNER
-        UserGameUpdateDTO userDTOForWinner = new UserGameUpdateDTO();
-        userDTOForWinner.setWin(1);
-        userDTOForWinner.setLoss(0);
-        userDTOForWinner.setDraw(0);
-        userDTOForWinner.setId(winner.getPlayerName());
+        if(draw){
+
+            UserGameUpdateDTO userDTOForPlayer1 = new UserGameUpdateDTO();
+            userDTOForPlayer1.setDraw(1);
+            userDTOForPlayer1.setLoss(0);
+            userDTOForPlayer1.setWin(0);
+            userDTOForPlayer1.setId(gameInfoDTO.getUser1ID());
 
 
+            UserGameUpdateDTO userDTOForPlayer2 = new UserGameUpdateDTO();
+            userDTOForPlayer2.setDraw(1);
+            userDTOForPlayer2.setLoss(0);
+            userDTOForPlayer2.setWin(0);
+
+            userDTOForPlayer2.setId(gameInfoDTO.getUser2ID());
+
+            userServiceClient.updateUserGameStats(userDTOForPlayer1);
+            userServiceClient.updateUserGameStats(userDTOForPlayer2);
+
+        }
+
+        else {
+
+            UserGameUpdateDTO userDTOForWinner = new UserGameUpdateDTO();
+            userDTOForWinner.setWin(1);
+            userDTOForWinner.setLoss(0);
+            userDTOForWinner.setDraw(0);
+            userDTOForWinner.setId(winner.getPlayerName());
 
 
+            UserGameUpdateDTO userDTOForLoser = new UserGameUpdateDTO();
+            userDTOForLoser.setWin(0);
+            userDTOForLoser.setLoss(1);
+            userDTOForLoser.setDraw(0);
+            userDTOForLoser.setId(loser.getPlayerName());
 
 
+            userServiceClient.updateUserGameStats(userDTOForWinner);
+            userServiceClient.updateUserGameStats(userDTOForLoser);
 
-        userServiceClient.updateUserGameStats(userDTOForWinner);
+
+        }
+
+
         CookieStorage.clearCookie();
 
         return "End Game with winner called!!!";
