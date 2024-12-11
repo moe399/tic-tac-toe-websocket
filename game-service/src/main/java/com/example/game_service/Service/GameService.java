@@ -179,13 +179,13 @@ public class GameService implements GameInterface {
 
         WebSocketSession webSocketSession = webSocketService.returnWebSocketSession(gamesessionId);
 
-       String cookie = webSocketSession.getAttributes().get("Cookie").toString();
+//       String cookie = webSocketSession.getAttributes().get("Cookie").toString();
 
         GameInfoDTO gameInfoDTO = returnGameInfo(gamesessionId);
 
 
 
-        System.out.println("Cookie from websocket Sesh: " + cookie);
+//        System.out.println("Cookie from websocket Sesh: " + cookie);
 
         notifyObserversThatGameEndedWithWinner(winner, loser, draw,  gamesessionId);
 

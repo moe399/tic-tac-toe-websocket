@@ -1,7 +1,6 @@
 server:
   port: 8888
 
-
 spring:
   cloud:
     config:
@@ -11,3 +10,4 @@ spring:
           username: moe399
           password: ${GITHUB_TIC_TAC_TOE_CONFIG_REPO_KEY}
           default-label: master
+          ignore-local-ssh-settings: true

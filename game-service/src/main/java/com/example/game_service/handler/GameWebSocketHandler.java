@@ -10,6 +10,9 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
@@ -29,8 +32,14 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
 
 
         String query = session.getUri().getQuery();
-        String gameSessionID = query.split("=")[1];
+//        String gameSessionID = query.split("=")[0];
 
+        Map<String, String> queryParams = Arrays.stream(query.split("&"))
+                .map(param -> param.split("="))
+                .collect(Collectors.toMap(kv -> kv[0], kv -> kv[1]));
+
+        String gameSessionID = queryParams.get("sessionId");
+        System.out.println("extracted gamesessionid " + gameSessionID);
 
         if (!webSocketService.checkIfGameSessionExists(gameSessionID)){
             System.out.println("Session doesnt exist, closing connection!");
@@ -51,7 +60,16 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
 
 
         String query = session.getUri().getQuery();
-        String gameSessionID = query.split("=")[1];
+//        String gameSessionID = query.split("=")[1];
+
+
+        Map<String, String> queryParams = Arrays.stream(query.split("&"))
+                .map(param -> param.split("="))
+                .collect(Collectors.toMap(kv -> kv[0], kv -> kv[1]));
+
+        String gameSessionID = queryParams.get("sessionId");
+        System.out.println("extracted gamesessionid " + gameSessionID);
+
 
         if (!webSocketService.checkIfGameSessionExists(gameSessionID)){
             System.out.println("Session doesnt exist, closing connection!");

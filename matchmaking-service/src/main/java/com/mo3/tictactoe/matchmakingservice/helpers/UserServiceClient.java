@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 // prod change to lb://
-@FeignClient(name = "user-service", url = "http://localhost:8081")
+@FeignClient(name = "user-service", url = "${USER_URL}")
 public interface UserServiceClient {
 
     @GetMapping("/user/getuserdetails")

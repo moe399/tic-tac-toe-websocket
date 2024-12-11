@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 // prod change to lb://
-@FeignClient(name = "matchmaking-service", url = "http://localhost:8082")
+@FeignClient(name = "matchmaking-service", url = "${MATCHMAKING_SERVICE_URL}")
 public interface MatchmakingServiceClient {
 
 

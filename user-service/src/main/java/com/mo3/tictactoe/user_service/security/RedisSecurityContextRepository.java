@@ -74,15 +74,29 @@ public class RedisSecurityContextRepository implements SecurityContextRepository
         System.out.println("Saving ocntext in redis repo");
 
 
-
+//
         String jsessionId = UUID.randomUUID().toString();
-
+//
             Cookie cookie = new Cookie("JSESSIONID", jsessionId);
-//            cookie.setHttpOnly(true);
-            cookie.setSecure(true);  // Ensure it's secure if using HTTPS
-            cookie.setPath("/");
+//            cookie.setSecure(true);  // Ensure it's secure if using HTTPS
+//            cookie.setPath("/");
+//            cookie.setDomain("168.119.239.66");
+//            response.addCookie(cookie);
+//
+//        String setCookie = String.format("%s=%s; Path=%s; HttpOnly; Secure; SameSite=None",
+//                cookie.getName(), cookie.getValue(), cookie.getPath());
+//
+//        response.addHeader("Set-Cookie", setCookie);
+//
 
-            response.addCookie(cookie);
+
+
+        String setCookie = String.format(
+                "JSESSIONID=%s; Path=/; Domain=168.119.239.66; HttpOnly; Secure; SameSite=None",
+                jsessionId
+        );
+        response.addHeader("Set-Cookie", setCookie);
+
 
             redisTemplate.opsForValue().set(jsessionId, context);
 

@@ -61,6 +61,7 @@ public class WebSocketService implements GameObserver {
     }
 
     public boolean checkIfGameSessionExists(String gamesessionId) {
+
         return redisTemplate.hasKey(gamesessionId).booleanValue();
 
     }

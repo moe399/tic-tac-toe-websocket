@@ -4,6 +4,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### config env vars
+.env.config-server
+
 ### STS ###
 .apt_generated
 .classpath
